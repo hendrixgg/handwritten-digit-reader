@@ -17,17 +17,19 @@ int main() {
     // run test case through network
     std::vector<double> output(digitReader(std::vector<double>(data.images[0], data.images[0]+784)));
     
+    // find answer
+    int maxVal = -1e9, answer = 0;
+    for(int i = 0; i < output.size(); ++i) {
+        if(output[i] > maxVal) {
+            maxVal = output[i], answer = i;
+        }
+    }
+
     // display results
     printf("label: %d\n", data.labels[0]);
     printf("network output:\n");
-    int maxVal = -1e9, maxIdx = 0;
     for(int i = 0; i < output.size(); ++i) {
-        if(output[i] > maxVal) {
-            maxVal = output[i], maxIdx = i;
-        }
-    }
-    for(int i = 0; i < output.size(); ++i) {
-        printf("%d: %.2lf %s\n", i, output[i], (i == maxIdx ? "<--" : ""));
+        printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
     }
     fclose(testDatafile);
 
