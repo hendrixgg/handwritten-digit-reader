@@ -22,13 +22,12 @@ int main() {
     FILE* images_file = fopen("train-images.idx3-ubyte", "rb");
     FILE* save_file =  fopen("train_data.bin", "wb");
 
-    int tmp[10];
     // read labels
-    fread(tmp, 4, 2, labels_file);// magic number and number of items (in wrong endianness, use ChangeEndianness to see proper values)
+    fseek(labels_file, 8, SEEK_SET); // skip magic number and number of items (in wrong endianness, use ChangeEndianness to see proper values)
     fread(data.labels, 1, data.size, labels_file);
     fclose(labels_file);
     // read images
-    fread(tmp, 4, 4, images_file);
+    fseek(images_file, 16, SEEK_SET);
     fread(data.images, 1, data.size*784, images_file);
     fclose(images_file);
     // write to save_file
