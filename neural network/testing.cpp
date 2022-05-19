@@ -11,7 +11,7 @@ TestData data;
 
 int main() {
     // try out on test data
-    FILE* testDatafile = fopen("../test_data/test_data.bin", "rb");
+    FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&data, sizeof(TestData), 1, testDatafile);
     
     // run test case through network
