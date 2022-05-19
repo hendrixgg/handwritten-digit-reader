@@ -20,7 +20,7 @@ TrainData data;
 int main() {
     FILE* labels_file = fopen("train-labels.idx1-ubyte", "rb");
     FILE* images_file = fopen("train-images.idx3-ubyte", "rb");
-    FILE* save_file =  fopen("train_data.bin", "wb");
+    FILE* save_file =  fopen("TrainData.bin", "wb");
 
     // read labels
     fseek(labels_file, 8, SEEK_SET); // skip magic number and number of items (in wrong endianness, use ChangeEndianness to see proper values)

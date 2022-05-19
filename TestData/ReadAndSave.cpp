@@ -19,7 +19,7 @@ TestData data;
 int main() {
     FILE* labels_file = fopen("t10k-labels.idx1-ubyte", "rb");
     FILE* images_file = fopen("t10k-images.idx3-ubyte", "rb");
-    FILE* save_file =  fopen("test_data.bin", "wb");
+    FILE* save_file =  fopen("TestData.bin", "wb");
 
     // read labels
     fseek(labels_file, 8, SEEK_SET);// magic number and number of items (in wrong endianness, use ChangeEndianness to see proper values)

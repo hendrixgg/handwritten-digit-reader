@@ -17,7 +17,7 @@ struct TrainData {
 TrainData data;
 
 int main() {
-    FILE* data_file =  fopen("./train_data/train_data.bin", "rb");
+    FILE* data_file =  fopen("./TrainData/TrainData.bin", "rb");
     fread(&data, sizeof(TrainData), 1, data_file);
     printf("label: %d\n", data.labels[0]);
     for(int i = 0; i < 28; ++i) {
