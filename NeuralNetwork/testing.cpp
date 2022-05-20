@@ -33,9 +33,10 @@ int main() {
     for(int i = 0; i < output.size(); ++i) {
         printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
     }
-    std::vector<double> expected(11);
-    expected[7] = 1;
+    std::vector<double> expected(10);
+    expected[data.labels[0]] = 1;
     printf("cost: %lf\n", digitReader.costFunction(expected));
+
     // save the neural network
     char wantToSave;
     printf("do you want to save the current neural network? This will overwrite the existing save file in this directory.\n");

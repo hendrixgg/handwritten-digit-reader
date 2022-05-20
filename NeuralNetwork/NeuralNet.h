@@ -52,7 +52,7 @@ struct NeuralNet {
 
         // read weights and biases and structure the vectors to store the values
         int l = 0, previousLayerSize = inputSize;
-        while(l < numberOfLayers) {
+        while (l < numberOfLayers) {
             value.emplace_back(nodesInLayer[l]);
             weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
             bias.emplace_back(nodesInLayer[l]);
@@ -62,7 +62,7 @@ struct NeuralNet {
             }
             previousLayerSize = nodesInLayer[l++];
         }
-        
+
         fclose(sourceFile);
     }
 
@@ -106,24 +106,21 @@ struct NeuralNet {
             printf("ERROR: Input size not valid for neural network. Input an std::vector<double> with size %d. Operation terminated.\n", inputSize);
             return {-999};
         }
-        // input to layer 0
-        for(int j = 0; j < value[0].size(); ++j) {
-            double z = bias[0][j];
-            for(int k = 0; k < inputSize; ++k) {
-                z += weight[0][j][k] * input[k];
-            }
-            value[0][j] = z > 0 ? z : 0;
-        }
-        // all other layers
-        for(int l = 1; l < numberOfLayers; ++l) {
-            for(int j = 0; j < value[l].size(); ++j) {
+
+        const double* previousLayerValue = input.data();
+        int l = 0, previousLayerSize = inputSize;
+        while (l < numberOfLayers) {
+            for(int j = 0; j < nodesInLayer[l]; ++j) {
                 double z = bias[l][j];
-                for(int k = 0; k < value[l-1].size(); ++k) {
-                    z += weight[l][j][k] * value[l-1][k];
+                for(int k = 0; k < previousLayerSize; ++k) {
+                    z += weight[l][j][k] * previousLayerValue[k];
                 }
                 value[l][j] = z > 0 ? z : 0;
             }
+            previousLayerValue = value[l].data();
+            previousLayerSize = nodesInLayer[l++];
         }
+
         return value[numberOfLayers-1];
     }
 
