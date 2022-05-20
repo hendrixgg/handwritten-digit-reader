@@ -6,7 +6,8 @@ struct TestData {
     unsigned char images[10000][784];
 };
 
-NeuralNet digitReader(784, 3, {16, 16, 10});
+// NeuralNet digitReader(784, 3, {16, 16, 10});
+NeuralNet digitReader("savedNeuralNetwork.bin");
 TestData data;
 
 int main() {
@@ -39,8 +40,6 @@ int main() {
     printf("(Y/N): ");
     scanf("%c", &wantToSave);
     if(wantToSave == 'y' || wantToSave == 'Y') {
-        FILE* savedNeuralNet = fopen("savedNeuralNetwork.bin", "wb");
-        fwrite(&digitReader, sizeof(digitReader), 1, savedNeuralNet);
-        fclose(savedNeuralNet);
+        digitReader.saveToFile("savedNeuralNetwork.bin");
     }
 }
