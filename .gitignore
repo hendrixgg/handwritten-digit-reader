@@ -1,3 +1,6 @@
+.vscode/settings.json
+NeuralNetwork/testing.exe
+TrainData/ReadAndSave.exe
+TestData/ReadAndSave.exe
 .prettierignore
-misc_tests.exe
-ReadAndSave.exe
+MiscTests.exe
