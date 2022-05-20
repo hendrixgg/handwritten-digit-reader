@@ -1,4 +1,6 @@
 #include "NeuralNet.h"
+#include <chrono>
+#include <vector>
 
 struct TestData {
     int size = 10000;
@@ -15,12 +17,13 @@ int main() {
     FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
-    
+
     // run test case through network
-    std::vector<double> output(digitReader(std::vector<double>(data.images[0], data.images[0]+784)));
+    std::vector<double> output(digitReader(std::vector<double>(data.images[0], data.images[0]+784)));    
     
     // find answer
-    int maxVal = -1e9, answer = 0;
+    double maxVal = -1e9;
+    int answer = 0;
     for(int i = 0; i < output.size(); ++i) {
         if(output[i] > maxVal) {
             maxVal = output[i], answer = i;

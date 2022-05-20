@@ -57,7 +57,7 @@ struct NeuralNet {
             weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
             bias.emplace_back(nodesInLayer[l]);
             for(int j = 0; j < nodesInLayer[l]; ++j) {
-                fread(weight[l][j].data(), sizeof(double), previousLayerSize, sourceFile);
+                fread(&weight[l][j][0], sizeof(double), previousLayerSize, sourceFile);
                 fread(&bias[l][j], sizeof(double), 1, sourceFile);
             }
             previousLayerSize = nodesInLayer[l++];
@@ -85,14 +85,14 @@ struct NeuralNet {
         // write dimensions of neural network
         fwrite(&inputSize, sizeof(int), 1, saveFile);
         fwrite(&numberOfLayers, sizeof(int), 1, saveFile);
-        fwrite(nodesInLayer.data(), sizeof(int), nodesInLayer.size(), saveFile);
+        fwrite(&nodesInLayer[0], sizeof(int), nodesInLayer.size(), saveFile);
 
         // layer
         for(int l = 0; l < numberOfLayers; ++l) {
             // node
             for(int j = 0; j < nodesInLayer[l]; ++j) {
                 // weights, bias
-                fwrite(weight[l][j].data(), sizeof(double), weight[l][j].size(), saveFile);
+                fwrite(&weight[l][j][0], sizeof(double), weight[l][j].size(), saveFile);
                 fwrite(&bias[l][j], sizeof(double), 1, saveFile); 
             }
         }
