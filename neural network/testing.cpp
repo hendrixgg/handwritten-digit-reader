@@ -14,6 +14,7 @@ int main() {
     // try out on test data
     FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&data, sizeof(TestData), 1, testDatafile);
+    fclose(testDatafile);
     
     // run test case through network
     std::vector<double> output(digitReader(std::vector<double>(data.images[0], data.images[0]+784)));
@@ -32,8 +33,9 @@ int main() {
     for(int i = 0; i < output.size(); ++i) {
         printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
     }
-    fclose(testDatafile);
-
+    std::vector<double> expected(11);
+    expected[7] = 1;
+    printf("cost: %lf\n", digitReader.costFunction(expected));
     // save the neural network
     char wantToSave;
     printf("do you want to save the current neural network? This will overwrite the existing save file in this directory.\n");

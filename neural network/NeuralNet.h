@@ -21,7 +21,7 @@ struct NeuralNet {
     // bias matrix, b[L][k] = bias on k-th node on L-th layer
     std::vector<std::vector<double>> bias;
 
-    NeuralNet(int inputSize, int numberOfLayers, std::vector<int> nodesInLayer) {
+    NeuralNet(const int inputSize, const int numberOfLayers, const std::vector<int>& nodesInLayer) {
         this->inputSize = inputSize, this->numberOfLayers = numberOfLayers, this->nodesInLayer.assign(nodesInLayer.begin(), nodesInLayer.end());
         // put in a new weight matrix for each layer in the network
         int l = 0, previousLayerSize = inputSize;
@@ -83,9 +83,10 @@ struct NeuralNet {
         fclose(saveFile);
     }
 
-    std::vector<double> operator ()(std::vector<double> input) {
+    // given an input vector, returns the values in the last layer of the network
+    std::vector<double> operator ()(const std::vector<double>& input) {
         if(input.size() != inputSize) {
-            printf("Input size not valid for neural network. Input an std::vector<double> with size %d. Operation terminated.\n", inputSize);
+            printf("ERROR: Input size not valid for neural network. Input an std::vector<double> with size %d. Operation terminated.\n", inputSize);
             return {-999};
         }
         // input to layer 0
@@ -107,5 +108,18 @@ struct NeuralNet {
             }
         }
         return value[numberOfLayers-1];
+    }
+
+    // returns the cost of an operation
+    double costFunction(const std::vector<double>& expected) {
+        if(expected.size() != value[numberOfLayers-1].size()) {
+            printf("ERROR: expected.size() != lastLayerOfNetwork.size(). (%d != %d)\n", expected.size(), value[numberOfLayers-1].size());
+            return -1;
+        }
+        double cost = 0;
+        for(int i = 0; i < expected.size(); ++i) {
+            cost += (value[numberOfLayers-1][i] - expected[i]) * (value[numberOfLayers-1][i] - expected[i]);
+        }
+        return cost;
     }
 };
