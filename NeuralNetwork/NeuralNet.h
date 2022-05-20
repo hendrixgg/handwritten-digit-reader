@@ -22,8 +22,7 @@ struct NeuralNet {
     std::vector<std::vector<double>> bias;
 
     // constructs a neural net with the specified structure containing random weights and biases
-    NeuralNet(const int inputSize, const int numberOfLayers, const std::vector<int>& nodesInLayer) {
-        this->inputSize = inputSize, this->numberOfLayers = numberOfLayers, this->nodesInLayer.assign(nodesInLayer.begin(), nodesInLayer.end());
+    NeuralNet(const int inpSize, const int numOfLayers, const std::vector<int>& dimensions): inputSize(inpSize), numberOfLayers(numOfLayers), nodesInLayer(dimensions) {
         // put in a new weight matrix for each layer in the network
         int l = 0, previousLayerSize = inputSize;
         while(l < numberOfLayers) {
