@@ -21,6 +21,7 @@ struct NeuralNet {
     // bias matrix, b[L][k] = bias on k-th node on L-th layer
     std::vector<std::vector<double>> bias;
 
+    // constructs a neural net with the specified structure containing random weights and biases
     NeuralNet(const int inputSize, const int numberOfLayers, const std::vector<int>& nodesInLayer) {
         this->inputSize = inputSize, this->numberOfLayers = numberOfLayers, this->nodesInLayer.assign(nodesInLayer.begin(), nodesInLayer.end());
         // put in a new weight matrix for each layer in the network
@@ -39,6 +40,7 @@ struct NeuralNet {
         }
     }
 
+    // constructs a neural net from the source file containing structure, weights and biases
     NeuralNet(const char* sourceFilePath) {
         FILE* sourceFile = fopen(sourceFilePath, "rb");
         
@@ -48,7 +50,7 @@ struct NeuralNet {
         nodesInLayer.resize(numberOfLayers);
         fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
 
-        // read weights and biases
+        // read weights and biases and structure the vectors to store the values
         int l = 0, previousLayerSize = inputSize;
         while(l < numberOfLayers) {
             value.emplace_back(nodesInLayer[l]);
@@ -62,6 +64,19 @@ struct NeuralNet {
         }
     }
 
+    /*  saves the neural net in the following format:
+        [offset] [type]         [value] [description]
+        0000     32 bit integer ??      inputSize
+        0004     32 bit integer ??      numberOfLayers (excluding input layer)
+        0008     32 bit integer ??      nodesInLayer[0]
+        ........
+        xxxx     32 bit integer ??      nodesInLayer[numberOfLayers-1]
+        xxxx     64 bit double  ??      weight[0][0][0]
+        xxxx     64 bit double  ??      weight[0][0][1]
+        xxxx     64 bit double  ??      weight[0][0][2]
+        ........
+        xxxx     64 bit double  ??      weight[layer][node on current layer][node on previous layer]
+    */
     void saveToFile(const char * filePath) {
         FILE* saveFile = fopen(filePath, "wb");
         
