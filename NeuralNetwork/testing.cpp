@@ -18,8 +18,11 @@ int main() {
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
 
+    std::vector<double> input(data.images[0], data.images[0]+784);
+    // for(double& d : input) d /= 255; // make pixel values from 0 to 1 not 0 to 255
+
     // run test case through network
-    std::vector<double> output(digitReader(std::vector<double>(data.images[0], data.images[0]+784)));    
+    std::vector<double> output(digitReader(input));    
     
     // find answer
     double maxVal = -1e9;
