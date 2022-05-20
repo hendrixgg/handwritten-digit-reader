@@ -62,6 +62,8 @@ struct NeuralNet {
             }
             previousLayerSize = nodesInLayer[l++];
         }
+        
+        fclose(sourceFile);
     }
 
     /*  saves the neural net in the following format:
