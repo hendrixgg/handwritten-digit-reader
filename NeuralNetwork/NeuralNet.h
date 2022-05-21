@@ -16,7 +16,7 @@ struct NeuralNet {
     int inputSize, numberOfLayers;
     std::vector<int> nodesInLayer;
     std::vector<std::vector<double>> value; // value of a node v[L][i] = value of the i-th node on the L-th layer
-    // weights matrix, W[L][j][k] = weight from (k-th node) of (layer L-1) to (j-th node) of (layer L)
+    // weights matrix, W[L][j][k] = weight from (k-th node) of (layer L+1) to (j-th node) of (layer L)
     std::vector<std::vector<std::vector<double>>> weight;
     // bias matrix, b[L][k] = bias on k-th node on L-th layer
     std::vector<std::vector<double>> bias;
@@ -24,18 +24,27 @@ struct NeuralNet {
     // constructs a neural net with the specified structure containing random weights and biases
     NeuralNet(const int inpSize, const int numOfLayers, const std::vector<int>& dimensions): inputSize(inpSize), numberOfLayers(numOfLayers), nodesInLayer(dimensions) {
         // put in a new weight matrix for each layer in the network
-        int l = numberOfLayers-1, previousLayerSize = inputSize;
-        while(l >= 0) {
+        for(int l = 0; l + 1 < numberOfLayers; ++l) {
             value.emplace_back(nodesInLayer[l]);
-            weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
+            weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
             bias.emplace_back(nodesInLayer[l]);
             for(int j = 0; j < nodesInLayer[l]; ++j) {
-                for(int k = 0; k < previousLayerSize; ++k) {
+                for(int k = 0; k < nodesInLayer[l + 1]; ++k) {
                     weight[l][j][k] = random(-1, 1); // random value to be put as a weight
                 }
                 bias[l][j] = random(-1, 1);
             }
-            previousLayerSize = nodesInLayer[l--];
+        }
+        // first hidden layer
+        const int nodesInFirstLayer = nodesInLayer[numberOfLayers - 1];
+        value.emplace_back(nodesInFirstLayer);
+        weight.emplace_back(nodesInFirstLayer, std::vector<double>(inputSize));
+        bias.emplace_back(nodesInFirstLayer);
+        for(int j = 0; j < nodesInFirstLayer; ++j) {
+            for(int k = 0; k < inputSize; ++k) {
+                weight[numberOfLayers - 1][j][k] = random(-1, 1); // random value to be put as a weight
+            }
+            bias[numberOfLayers - 1][j] = random(-1, 1);
         }
     }
 
@@ -50,16 +59,23 @@ struct NeuralNet {
         fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
 
         // read weights and biases and structure the vectors to store the values
-        int l = numberOfLayers-1, previousLayerSize = inputSize;
-        while (l >= 0) {
+        for(int l = 0; l + 1 < numberOfLayers; ++l) {
             value.emplace_back(nodesInLayer[l]);
-            weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
+            weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
             bias.emplace_back(nodesInLayer[l]);
             for(int j = 0; j < nodesInLayer[l]; ++j) {
-                fread(&weight[l][j][0], sizeof(double), previousLayerSize, sourceFile);
+                fread(&weight[l][j][0], sizeof(double), nodesInLayer[l+1], sourceFile);
                 fread(&bias[l][j], sizeof(double), 1, sourceFile);
             }
-            previousLayerSize = nodesInLayer[l--];
+        }
+        // first hidden layer
+        const int nodesInFirstHiddenLayer = nodesInLayer[numberOfLayers - 1];
+        value.emplace_back(nodesInFirstHiddenLayer);
+        weight.emplace_back(nodesInFirstHiddenLayer, std::vector<double>(inputSize));
+        bias.emplace_back(nodesInFirstHiddenLayer);
+        for(int j = 0; j < nodesInFirstHiddenLayer; ++j) {
+            fread(&weight[numberOfLayers - 1][j][0], sizeof(double), inputSize, sourceFile);
+            fread(&bias[numberOfLayers - 1][j], sizeof(double), 1, sourceFile);
         }
 
         fclose(sourceFile);
@@ -125,8 +141,8 @@ struct NeuralNet {
 
     // returns the cost of an operation
     double error(const std::vector<double>& expected) {
-        if(expected.size() != value[numberOfLayers-1].size()) {
-            printf("ERROR: expected.size() != lastLayerOfNetwork.size(). (%d != %d)\n", expected.size(), value[numberOfLayers-1].size());
+        if(expected.size() != value[0].size()) {
+            printf("ERROR: expected.size() != lastLayerOfNetwork.size(). (%d != %d)\n", expected.size(), value[0].size());
             return -1;
         }
         double cost = 0;
