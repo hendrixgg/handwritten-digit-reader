@@ -12,7 +12,7 @@ double random(const double& range_from, const double& range_to)
 }
 
 struct NeuralNet {
-    // -1-th layer is considered the input layer
+    // 0-th layer is the output layer, 1-th layer is the last hidden layer, ...
     int inputSize, numberOfLayers;
     std::vector<int> nodesInLayer;
     std::vector<std::vector<double>> value; // value of a node v[L][i] = value of the i-th node on the L-th layer
@@ -24,8 +24,8 @@ struct NeuralNet {
     // constructs a neural net with the specified structure containing random weights and biases
     NeuralNet(const int inpSize, const int numOfLayers, const std::vector<int>& dimensions): inputSize(inpSize), numberOfLayers(numOfLayers), nodesInLayer(dimensions) {
         // put in a new weight matrix for each layer in the network
-        int l = 0, previousLayerSize = inputSize;
-        while(l < numberOfLayers) {
+        int l = numberOfLayers, previousLayerSize = inputSize;
+        while(l >= 0) {
             value.emplace_back(nodesInLayer[l]);
             weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
             bias.emplace_back(nodesInLayer[l]);
@@ -35,7 +35,7 @@ struct NeuralNet {
                 }
                 bias[l][j] = random(-1, 1);
             }
-            previousLayerSize = nodesInLayer[l++];
+            previousLayerSize = nodesInLayer[l--];
         }
     }
 
@@ -50,8 +50,8 @@ struct NeuralNet {
         fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
 
         // read weights and biases and structure the vectors to store the values
-        int l = 0, previousLayerSize = inputSize;
-        while (l < numberOfLayers) {
+        int l = numberOfLayers, previousLayerSize = inputSize;
+        while (l >= 0) {
             value.emplace_back(nodesInLayer[l]);
             weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
             bias.emplace_back(nodesInLayer[l]);
@@ -59,7 +59,7 @@ struct NeuralNet {
                 fread(&weight[l][j][0], sizeof(double), previousLayerSize, sourceFile);
                 fread(&bias[l][j], sizeof(double), 1, sourceFile);
             }
-            previousLayerSize = nodesInLayer[l++];
+            previousLayerSize = nodesInLayer[l--];
         }
 
         fclose(sourceFile);
@@ -107,8 +107,8 @@ struct NeuralNet {
         }
 
         const double* previousLayerValue = input.data();
-        int l = 0, previousLayerSize = inputSize;
-        while (l < numberOfLayers) {
+        int l = numberOfLayers, previousLayerSize = inputSize;
+        while (l >= 0) {
             for(int j = 0; j < nodesInLayer[l]; ++j) {
                 double z = bias[l][j];
                 for(int k = 0; k < previousLayerSize; ++k) {
@@ -117,10 +117,10 @@ struct NeuralNet {
                 value[l][j] = z > 0 ? z : 0;
             }
             previousLayerValue = value[l].data();
-            previousLayerSize = nodesInLayer[l++];
+            previousLayerSize = nodesInLayer[l--];
         }
 
-        return value[numberOfLayers-1];
+        return value[0];
     }
 
     // returns the cost of an operation
@@ -131,7 +131,8 @@ struct NeuralNet {
         }
         double cost = 0;
         for(int i = 0; i < expected.size(); ++i) {
-            cost += 0.5 * (value[numberOfLayers-1][i] - expected[i]) * (value[numberOfLayers-1][i] - expected[i]);
+            double diff = (value[0][i] - expected[i]);
+            cost += 0.5 * diff * diff;
         }
         return cost;
     }

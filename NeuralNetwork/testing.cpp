@@ -8,7 +8,7 @@ struct TestData {
     unsigned char images[10000][784];
 };
 
-// NeuralNet digitReader(784, 3, {16, 16, 10});
+// NeuralNet digitReader(784, 3, {10, 16, 16});
 NeuralNet digitReader("savedNeuralNetwork.bin");
 TestData data;
 
@@ -41,7 +41,7 @@ int main() {
     }
     std::vector<double> expected(10);
     expected[data.labels[0]] = 1;
-    printf("cost: %lf\n", digitReader.costFunction(expected));
+    printf("cost: %lf\n", digitReader.error(expected));
 
     // save the neural network
     char wantToSave;
