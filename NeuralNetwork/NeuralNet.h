@@ -124,14 +124,14 @@ struct NeuralNet {
     }
 
     // returns the cost of an operation
-    double costFunction(const std::vector<double>& expected) {
+    double error(const std::vector<double>& expected) {
         if(expected.size() != value[numberOfLayers-1].size()) {
             printf("ERROR: expected.size() != lastLayerOfNetwork.size(). (%d != %d)\n", expected.size(), value[numberOfLayers-1].size());
             return -1;
         }
         double cost = 0;
         for(int i = 0; i < expected.size(); ++i) {
-            cost += (value[numberOfLayers-1][i] - expected[i]) * (value[numberOfLayers-1][i] - expected[i]);
+            cost += 0.5 * (value[numberOfLayers-1][i] - expected[i]) * (value[numberOfLayers-1][i] - expected[i]);
         }
         return cost;
     }
