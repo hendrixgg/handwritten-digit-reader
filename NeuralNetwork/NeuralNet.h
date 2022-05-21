@@ -24,7 +24,7 @@ struct NeuralNet {
     // constructs a neural net with the specified structure containing random weights and biases
     NeuralNet(const int inpSize, const int numOfLayers, const std::vector<int>& dimensions): inputSize(inpSize), numberOfLayers(numOfLayers), nodesInLayer(dimensions) {
         // put in a new weight matrix for each layer in the network
-        int l = numberOfLayers, previousLayerSize = inputSize;
+        int l = numberOfLayers-1, previousLayerSize = inputSize;
         while(l >= 0) {
             value.emplace_back(nodesInLayer[l]);
             weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
@@ -50,7 +50,7 @@ struct NeuralNet {
         fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
 
         // read weights and biases and structure the vectors to store the values
-        int l = numberOfLayers, previousLayerSize = inputSize;
+        int l = numberOfLayers-1, previousLayerSize = inputSize;
         while (l >= 0) {
             value.emplace_back(nodesInLayer[l]);
             weight.emplace_back(nodesInLayer[l], std::vector<double>(previousLayerSize));
@@ -107,7 +107,7 @@ struct NeuralNet {
         }
 
         const double* previousLayerValue = input.data();
-        int l = numberOfLayers, previousLayerSize = inputSize;
+        int l = numberOfLayers-1, previousLayerSize = inputSize;
         while (l >= 0) {
             for(int j = 0; j < nodesInLayer[l]; ++j) {
                 double z = bias[l][j];
