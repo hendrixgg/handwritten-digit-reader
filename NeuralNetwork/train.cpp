@@ -7,22 +7,14 @@
 #include <random>
 #include <algorithm>
 
-std::mt19937 generator(std::chrono::steady_clock::now().time_since_epoch().count());
-// generates a random integer on the interval [range_from, range_to]
-int random(const int& range_from, const int& range_to)
-{
-    std::uniform_int_distribution<int>    distribution(range_from, range_to);
-    return distribution(generator);
-}
-
 struct TrainData{
     int size = 60000;
     unsigned char labels[60000];
     unsigned char images[60000][784];
 };
 
-NeuralNet digitReader({10, 16, 16, 784});
-// NeuralNet digitReader("currentNeuralNetwork.bin");
+// NeuralNet digitReader({10, 16, 16, 784});
+NeuralNet digitReader("currentNeuralNetwork.bin");
 Trainer trainer(&digitReader);
 TrainData data;
 int main() {
@@ -55,5 +47,4 @@ int main() {
     printf("[Time Elasped: %lld ms]\n", duration.count());
 
     digitReader.saveToFile("currentNeuralNetwork.bin");
-    
 }
