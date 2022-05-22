@@ -19,7 +19,7 @@ int main() {
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
     
-    char wantToSave;
+    char userInput;
     while (true){
         double avgCost = 0;
         int numTests = data.size;
@@ -53,14 +53,16 @@ int main() {
 
         // save the neural network
         printf("do you want to save the current neural network? This will overwrite the existing save file in this directory.\n");
-        printf("(Y/N): ");
-        scanf("%c", &wantToSave);
+        printf("(Y/N, q/Q to quit): ");
+        scanf("%c", &userInput);
         fflush(stdin);
-        // if(wantToSave == 'y' || wantToSave == 'Y') {
-        //     digitReader.saveToFile("savedNeuralNetwork.bin");
-        //     break;
-        // }
-        // digitReader.initRandom();
+        
+        if(userInput == 'q' || userInput == 'Q') 
+            break;
+        if(userInput == 'y' || userInput == 'Y') {
+            digitReader.saveToFile("savedNeuralNetwork.bin");
+        }
+        digitReader.initRandom();
     }
     
 }
