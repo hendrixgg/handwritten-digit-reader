@@ -1,6 +1,7 @@
 #include "NeuralNet.h"
 #include <vector>
 #include <cstdio>
+#include <chrono>
 
 struct TestData {
     int size = 10000;
@@ -23,11 +24,13 @@ int main() {
     while (true){
         double avgCost = 0;
         int numTests = data.size;
+
+        printf("[Program Start]\n");
+        auto begin = std::chrono::steady_clock::now();
+        
         for(int t = 0; t < data.size; ++t) {
-            std::vector<double> input(data.images[t], data.images[t]+784);
-            // for(double& d : input) d /= 255; // make pixel values from 0 to 1 not 0 to 255
             // run test case through network
-            std::vector<double> output(digitReader(input));
+            std::vector<double> output(digitReader(std::vector<double>(data.images[t], data.images[t]+784)));
 
             // find answer
             double maxVal = -1e9;
@@ -49,6 +52,11 @@ int main() {
             // }
             // printf("cost: %lf\n", digitReader.error(expected));
         }
+        
+        auto end = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+        printf("[Time Elasped: %lld ms]\n", duration.count());
+
         printf("average cost: %lf\n", avgCost/numTests);
 
         // save the neural network
