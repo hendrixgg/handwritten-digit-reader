@@ -1,5 +1,5 @@
 .vscode/settings.json
-NeuralNetwork/a.exe
 TrainData/ReadAndSave.exe
 TestData/ReadAndSave.exe
 .prettierignore
+a.exe
