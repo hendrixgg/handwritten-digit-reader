@@ -3,5 +3,3 @@ NeuralNetwork/a.exe
 TrainData/ReadAndSave.exe
 TestData/ReadAndSave.exe
 .prettierignore
-MiscTests.exe
-a.exe
