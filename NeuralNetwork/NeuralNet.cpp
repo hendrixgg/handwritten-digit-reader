@@ -16,20 +16,8 @@ double NeuralNet::f(double z) {
     return 1.0 / (1 + std::exp(-z));
 }
 // constructs a neural net with the specified structure containing random weights and biases
-NeuralNet::NeuralNet(const std::vector<int>& dimensions): numberOfLayers(dimensions.size()), nodesInLayer(dimensions) {
-    // put in a new weight matrix for each layer in the network
-    for(int l = 0; l + 1 < numberOfLayers; ++l) {
-        value.emplace_back(nodesInLayer[l]);
-        weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
-        bias.emplace_back(nodesInLayer[l]);
-        for(int j = 0; j < nodesInLayer[l]; ++j) {
-            for(int k = 0; k < nodesInLayer[l + 1]; ++k) {
-                weight[l][j][k] = random(-1, 1); // random value to be put as a weight
-            }
-            bias[l][j] = random(-1, 1);
-        }
-    }
-    value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
+NeuralNet::NeuralNet(const std::vector<int>& dimensions){
+    initRandom(dimensions);
 }
 
 // constructs a neural net from the source file containing structure, weights and biases
@@ -54,6 +42,31 @@ NeuralNet::NeuralNet(const char* sourceFilePath) {
     value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
 
     fclose(sourceFile);
+}
+
+void NeuralNet::initRandom(const std::vector<int>& dimensions) {
+    numberOfLayers = dimensions.size();
+    nodesInLayer.assign(dimensions.begin(), dimensions.end());
+    // put in a new weight matrix for each layer in the network
+    for(int l = 0; l + 1 < numberOfLayers; ++l) {
+        value.emplace_back(nodesInLayer[l]);
+        weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
+        bias.emplace_back(nodesInLayer[l]);
+    }
+    value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
+    initRandom(); // for random values
+}
+
+void NeuralNet::initRandom() {
+    // put in a new weight matrix for each layer in the network
+    for(int l = 0; l + 1 < numberOfLayers; ++l) {
+        for(int j = 0; j < nodesInLayer[l]; ++j) {
+            for(int k = 0; k < nodesInLayer[l + 1]; ++k) {
+                weight[l][j][k] = random(-1, 1); // random value to be put as a weight
+            }
+            bias[l][j] = random(-1, 1);
+        }
+    }
 }
 
 /*  saves the neural net in the following format:

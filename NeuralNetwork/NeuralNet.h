@@ -24,6 +24,10 @@ public:
     // constructs a neural net from the source file created by saveToFile function
     NeuralNet(const char* sourceFilePath);
 
+    // initializes the weights and biases to random values
+    void initRandom(const std::vector<int>& dimensions);
+    void initRandom();
+
     /*  saves the neural net in the following format:
         [offset] [type]         [value] [description]
         0000     32 bit integer ??      inputSize
