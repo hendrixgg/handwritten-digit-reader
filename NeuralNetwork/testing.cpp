@@ -1,6 +1,5 @@
 #include "NeuralNet.h"
 #include "Trainer.h"
-#include <chrono>
 #include <vector>
 #include <cstdio>
 
@@ -27,7 +26,6 @@ int main() {
     for(int t = 0; t < 2; ++t) {
         // run test case through network
         std::vector<double> output(digitReader(input));
-
 
         // find answer
         double maxVal = -1e9;
