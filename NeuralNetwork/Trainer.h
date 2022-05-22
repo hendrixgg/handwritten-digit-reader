@@ -15,11 +15,9 @@ class Trainer {
 public:
     Trainer(NeuralNet* nn);
 
-    template<typename T>
-    void train(const std::vector<std::vector<T>>& trainingExamples, const std::vector<std::vector<T>>& expected, const double rate);
+    void train(const std::vector<std::vector<double>>& trainingExamples, const std::vector<std::vector<double>>& expected, const double rate);
 
-    template<typename T>
-    void backProp(const std::vector<T>& example, const std::vector<double>& expected);
+    void backProp(const std::vector<double>& example, const std::vector<double>& expected);
 };
 
 #endif // TRAINERB_TRAINER_H

@@ -44,8 +44,7 @@ public:
     void saveToFile(const char* filePath);
 
     // given an input vector, returns the values in the last layer of the network
-    template<typename T>
-    std::vector<double> operator ()(const std::vector<T>& input);
+    std::vector<double> operator ()(const std::vector<double>& input);
 
     // returns the cost of an operation
     double error(const std::vector<double>& expected);

@@ -10,7 +10,9 @@ struct TestData {
 };
 
 // NeuralNet digitReader({10, 16, 16, 784});
-NeuralNet digitReader("savedNeuralNetwork.bin");
+// NeuralNet digitReader("savedNeuralNetwork.bin");
+NeuralNet digitReader("currentNeuralNetwork.bin");
+
 // Trainer trainer(&digitReader);
 TestData data;
 

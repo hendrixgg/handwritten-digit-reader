@@ -16,11 +16,10 @@ Trainer::Trainer(NeuralNet* nn):  net(nn) {
     }
 }
 
-template<typename T>
-void Trainer::train(const std::vector<std::vector<T>>& trainingExamples, const std::vector<std::vector<T>>& expected, const double rate) {
+void Trainer::train(const std::vector<std::vector<double>>& trainingExamples, const std::vector<std::vector<double>>& expected, const double rate) {
     // find gradient
     for(int i = 0; i < trainingExamples.size(); ++i) {
-        backProp(trainingExamples[i], std::vector<double>(expected[i].begin(), expected[i].end()));
+        backProp(std::vector<double>(trainingExamples[i].begin(), trainingExamples[i].end()), std::vector<double>(expected[i].begin(), expected[i].end()));
     }
     // modify weights and biases based on gradients
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
@@ -33,8 +32,7 @@ void Trainer::train(const std::vector<std::vector<T>>& trainingExamples, const s
     }
 }
 
-template<typename T>
-void Trainer::backProp(const std::vector<T>& example, const std::vector<double>& expected) {
+void Trainer::backProp(const std::vector<double>& example, const std::vector<double>& expected) {
     // run operation to get values
     (*net)(example);
 

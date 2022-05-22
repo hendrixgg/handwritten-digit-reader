@@ -28,16 +28,26 @@ int main() {
     FILE* trainDatafile = fopen("../TrainData/TrainData.bin", "rb");
     fread(&data, sizeof(TrainData), 1, trainDatafile);
     fclose(trainDatafile);
-
+    
+    printf("[Program Start]\n");
+    auto begin = std::chrono::steady_clock::now();
+    
     int batchSize = 100;
-    for(int gen = 0; gen < 600; ++gen) {
+    for(int gen = 0; gen < 1; ++gen) {
         int startPos = random(0, data.size - batchSize - 1);
-        std::vector<std::vector<unsigned char>> trainingBatch(batchSize, std::vector<unsigned char>(784));
-        std::vector<std::vector<unsigned char>> expectedOutput(batchSize, std::vector<unsigned char>(10));
-        for(int i = startPos; i < startPos + batchSize; ++i) {
-            trainingBatch[i].assign(data.images[i], data.images[i]+784);
-            expectedOutput[i][data.labels[i]] = 1U;
+        std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
+        std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));
+        for(int i = 0; i < batchSize; ++i) {
+            trainingBatch[i].assign(data.images[i+startPos], data.images[i+startPos]+784);
+            expectedOutput[i][data.labels[i+startPos]] = 1U;
         }
         trainer.train(trainingBatch, expectedOutput, 0.8);
     }
+
+    auto end = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    printf("[Time Elasped: %lld ms]\n", duration.count());
+
+    digitReader.saveToFile("newNeuralNetwork.bin");
+    
 }
