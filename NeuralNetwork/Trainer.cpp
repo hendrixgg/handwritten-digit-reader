@@ -20,7 +20,7 @@ template<typename T>
 void Trainer::train(const std::vector<std::vector<T>>& trainingExamples, const std::vector<std::vector<T>>& expected, const double rate) {
     // find gradient
     for(int i = 0; i < trainingExamples.size(); ++i) {
-        backProp(trainingExamples[i], expected[i]);
+        backProp(std::vector<double>(trainingExamples[i]), std::vector<double>(expected[i]));
     }
     // modify weights and biases based on gradients
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
