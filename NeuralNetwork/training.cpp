@@ -48,6 +48,6 @@ int main() {
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
     printf("[Time Elasped: %lld ms]\n", duration.count());
 
-    digitReader.saveToFile("newNeuralNetwork.bin");
+    digitReader.saveToFile("currentNeuralNetwork.bin");
     
 }

@@ -72,7 +72,7 @@ int main() {
         if(userInput == 'y' || userInput == 'Y') {
             digitReader.saveToFile("savedNeuralNetwork.bin");
         }
-        digitReader.initRandom();
+        // digitReader.initRandom();
     }
     
 }
