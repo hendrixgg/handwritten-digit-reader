@@ -2,6 +2,7 @@
 #define TRAINERB_TRAINER_H
 
 #include "NeuralNet.h"
+#include <vector>
 
 class Trainer {
     NeuralNet* net;
@@ -9,7 +10,7 @@ class Trainer {
     std::vector<std::vector<std::vector<double>>> weightGradient;
     std::vector<std::vector<double>> biasGradient;
 
-    inline double partialA_wto_Z(int l, int j) { return net->value[l][j] * (1 - net->value[l][j]);}
+    inline double partialA_wrt_Z(int l, int j);
 
 public:
     Trainer(NeuralNet* nn);
