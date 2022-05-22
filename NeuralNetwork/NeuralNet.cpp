@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <random>
-#include <vector>
 #include <cstdio>
 #include <cmath>
 

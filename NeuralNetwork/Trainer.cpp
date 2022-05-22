@@ -1,4 +1,5 @@
 #include "Trainer.h"
+
 #include <stdio.h>
 
 inline double Trainer::partialA_wrt_Z(int l, int j) { return net->value[l][j] * (1 - net->value[l][j]);}
