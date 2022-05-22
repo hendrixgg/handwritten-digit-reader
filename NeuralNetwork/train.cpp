@@ -29,11 +29,14 @@ int main() {
     fread(&data, sizeof(TrainData), 1, trainDatafile);
     fclose(trainDatafile);
     
+    int numberOfGenerations;
+    scanf("%d", &numberOfGenerations);
+
     printf("[Program Start]\n");
     auto begin = std::chrono::steady_clock::now();
     
     int batchSize = 100;
-    for(int gen = 0; gen < 1; ++gen) {
+    for(int gen = 0; gen < numberOfGenerations; ++gen) {
         int startPos = random(0, data.size - batchSize - 1);
         std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
         std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));

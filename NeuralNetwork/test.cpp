@@ -49,7 +49,7 @@ int main() {
         std::vector<double> expected(10);
         expected[data.labels[t]] = 1;
         avgCost += digitReader.error(expected);
-        correctAnswers += answer==data.labels[t];
+        correctAnswers += answer==int(data.labels[t]);
         // display results
         // printf("label: %d\n", data.labels[t]);
         // printf("network output:\n");
