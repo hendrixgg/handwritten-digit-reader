@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdio>
 #include <chrono>
+#include <algorithm>
 
 struct TestData {
     int size = 10000;
@@ -39,13 +40,7 @@ int main() {
 
         // find the network's answer
         std::vector<double> output(digitReader(std::vector<double>(data.images[t], data.images[t]+784)));
-        double maxVal = -1e9;
-        int answer = 0;
-        for(int i = 0; i < output.size(); ++i) {
-            if(output[i] > maxVal) {
-                maxVal = output[i], answer = i;
-            }
-        }
+        int answer = std::max_element(output.begin(), output.end()) - output.begin();
         std::vector<double> expected(10);
         expected[data.labels[t]] = 1;
         avgCost += digitReader.error(expected);

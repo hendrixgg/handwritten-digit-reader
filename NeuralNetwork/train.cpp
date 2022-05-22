@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <chrono>
 #include <random>
+#include <algorithm>
 
 std::mt19937 generator(std::chrono::steady_clock::now().time_since_epoch().count());
 // generates a random integer on the interval [range_from, range_to]
@@ -20,8 +21,8 @@ struct TrainData{
     unsigned char images[60000][784];
 };
 
-// NeuralNet digitReader({10, 16, 16, 784});
-NeuralNet digitReader("currentNeuralNetwork.bin");
+NeuralNet digitReader({10, 16, 16, 784});
+// NeuralNet digitReader("currentNeuralNetwork.bin");
 Trainer trainer(&digitReader);
 TrainData data;
 int main() {
@@ -36,13 +37,15 @@ int main() {
     auto begin = std::chrono::steady_clock::now();
     
     int batchSize = 100;
-    for(int gen = 0; gen < numberOfGenerations; ++gen) {
-        int startPos = random(0, data.size - batchSize - 1);
+    int shuffle[data.size];
+    std::iota(shuffle, shuffle+data.size, 0);
+    std::random_shuffle(shuffle, shuffle+data.size);
+    for(int gen = 0, t = 0; gen < numberOfGenerations; ++gen, t+=batchSize) {
         std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
         std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));
-        for(int i = 0; i < batchSize; ++i) {
-            trainingBatch[i].assign(data.images[i+startPos], data.images[i+startPos]+784);
-            expectedOutput[i][data.labels[i+startPos]] = 1U;
+        for(int i = t; i < t + batchSize; ++i) {
+            trainingBatch[i - t].assign(data.images[shuffle[i]], data.images[shuffle[i]]+784);
+            expectedOutput[i - t][data.labels[shuffle[i]]] = 1U;
         }
         trainer.train(trainingBatch, expectedOutput, 0.8);
     }
