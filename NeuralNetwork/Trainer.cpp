@@ -16,7 +16,8 @@ Trainer::Trainer(NeuralNet* nn):  net(nn) {
     }
 }
 
-void Trainer::train(const std::vector<std::vector<double>>& trainingExamples, const std::vector<std::vector<double>>& expected, const double rate) {
+template<typename T>
+void Trainer::train(const std::vector<std::vector<T>>& trainingExamples, const std::vector<std::vector<T>>& expected, const double rate) {
     // find gradient
     for(int i = 0; i < trainingExamples.size(); ++i) {
         backProp(trainingExamples[i], expected[i]);

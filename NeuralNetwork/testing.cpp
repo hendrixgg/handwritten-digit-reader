@@ -20,10 +20,11 @@ int main() {
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
 
-    std::vector<double> input(data.images[0], data.images[0]+784);
-    for(double& d : input) d /= 255; // make pixel values from 0 to 1 not 0 to 255
-
-    for(int t = 0; t < 10; ++t) {
+    double avgCost = 0;
+    int numTests = data.size;
+    for(int t = 0; t < data.size; ++t) {
+        std::vector<double> input(data.images[t], data.images[t]+784);
+        // for(double& d : input) d /= 255; // make pixel values from 0 to 1 not 0 to 255
         // run test case through network
         std::vector<double> output(digitReader(input));
 
@@ -35,26 +36,25 @@ int main() {
                 maxVal = output[i], answer = i;
             }
         }
-
-        // display results
-        printf("label: %d\n", data.labels[0]);
-        printf("network output:\n");
-        for(int i = 0; i < output.size(); ++i) {
-            printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
-        }
         std::vector<double> expected(10);
         expected[data.labels[0]] = 1;
-        printf("cost: %lf\n", digitReader.error(expected));
+        avgCost += digitReader.error(expected);
 
-        trainer.train({input}, {expected}, 1);
+        // // display results
+        // printf("label: %d\n", data.labels[t]);
+        // printf("network output:\n");
+        // for(int i = 0; i < output.size(); ++i) {
+        //     printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
+        // }
+        // printf("cost: %lf\n", digitReader.error(expected));
     }
-
+    printf("average cost: %lf\n", avgCost/numTests);
     // save the neural network
-    char wantToSave;
-    printf("do you want to save the current neural network? This will overwrite the existing save file in this directory.\n");
-    printf("(Y/N): ");
-    scanf("%c", &wantToSave);
-    if(wantToSave == 'y' || wantToSave == 'Y') {
-        digitReader.saveToFile("savedNeuralNetwork.bin");
-    }
+    // char wantToSave;
+    // printf("do you want to save the current neural network? This will overwrite the existing save file in this directory.\n");
+    // printf("(Y/N): ");
+    // scanf("%c", &wantToSave);
+    // if(wantToSave == 'y' || wantToSave == 'Y') {
+    //     digitReader.saveToFile("savedNeuralNetwork.bin");
+    // }
 }
