@@ -37,7 +37,7 @@ int main() {
         std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));
         for(int i = t; i < t + batchSize; ++i) {
             trainingBatch[i - t].assign(data.images[shuffle[i]], data.images[shuffle[i]]+784);
-            expectedOutput[i - t][data.labels[shuffle[i]]] = 1U;
+            expectedOutput[i - t][data.labels[shuffle[i]]] = 1.0;
         }
         trainer.train(trainingBatch, expectedOutput, 0.8);
     }

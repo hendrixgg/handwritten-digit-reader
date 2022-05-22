@@ -10,9 +10,9 @@ struct TestData {
     unsigned char images[10000][784];
 };
 
-// NeuralNet digitReader({10, 16, 16, 784});
+NeuralNet digitReader({10, 16, 16, 784});
 // NeuralNet digitReader("savedNeuralNetwork.bin");
-NeuralNet digitReader("currentNeuralNetwork.bin");
+// NeuralNet digitReader("currentNeuralNetwork.bin");
 
 TestData data;
 
