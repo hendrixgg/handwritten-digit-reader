@@ -1,21 +1,17 @@
-#include <chrono>
-#include <random>
+#ifndef NEURALNETB_NEURALNET_H
+#define NEURALNETB_NEURALNET_H
+
 #include <vector>
-#include <stdio.h>
 
-std::mt19937 generator(std::chrono::steady_clock::now().time_since_epoch().count());
-// generates a random real number on the interval [range_from, range_to)
-double random(const double& range_from, const double& range_to)
-{
-    std::uniform_real_distribution<double> distribution (range_from, range_to);
-    return distribution(generator);
-}
-
-struct NeuralNet {
+class NeuralNet {
+    // generates a random real number on the interval [range_from, range_to)
+    double static random(const double& range_from, const double& range_to);
+    double static f(double z);
+public:
+    
     // 0-th layer is the output layer, 1-th layer is the last hidden layer, ...
     int numberOfLayers; // input layer + hidden layers + output layer
     std::vector<int> nodesInLayer;
-    std::vector<std::vector<double>> z_value;
     std::vector<std::vector<double>> value; // value of a node v[L][i] = value of the i-th node on the L-th layer
     // weights matrix, W[L][j][k] = weight from (k-th node) of (layer L+1) to (j-th node) of (layer L)
     std::vector<std::vector<std::vector<double>>> weight;
@@ -23,47 +19,10 @@ struct NeuralNet {
     std::vector<std::vector<double>> bias;
 
     // constructs a neural net with the specified structure containing random weights and biases
-    NeuralNet(const std::vector<int>& dimensions): numberOfLayers(dimensions.size()), nodesInLayer(dimensions) {
-        // put in a new weight matrix for each layer in the network
-        for(int l = 0; l + 1 < numberOfLayers; ++l) {
-            value.emplace_back(nodesInLayer[l]);
-            z_value.emplace_back(nodesInLayer[l]);
-            weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
-            bias.emplace_back(nodesInLayer[l]);
-            for(int j = 0; j < nodesInLayer[l]; ++j) {
-                for(int k = 0; k < nodesInLayer[l + 1]; ++k) {
-                    weight[l][j][k] = random(-1, 1); // random value to be put as a weight
-                }
-                bias[l][j] = random(-1, 1);
-            }
-        }
-        value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
-    }
+    NeuralNet(const std::vector<int>& dimensions);
 
-    // constructs a neural net from the source file containing structure, weights and biases
-    NeuralNet(const char* sourceFilePath) {
-        FILE* sourceFile = fopen(sourceFilePath, "rb");
-        
-        // read dimesions of neural network
-        fread(&numberOfLayers, sizeof(int), 1, sourceFile);
-        nodesInLayer.resize(numberOfLayers);
-        fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
-
-        // read weights and biases and structure the vectors to store the values
-        for(int l = 0; l + 1 < numberOfLayers; ++l) {
-            value.emplace_back(nodesInLayer[l]);
-            z_value.emplace_back(nodesInLayer[l]);
-            weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
-            bias.emplace_back(nodesInLayer[l]);
-            for(int j = 0; j < nodesInLayer[l]; ++j) {
-                fread(&weight[l][j][0], sizeof(double), nodesInLayer[l+1], sourceFile);
-                fread(&bias[l][j], sizeof(double), 1, sourceFile);
-            }
-        }
-        value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
-
-        fclose(sourceFile);
-    }
+    // constructs a neural net from the source file created by saveToFile function
+    NeuralNet(const char* sourceFilePath);
 
     /*  saves the neural net in the following format:
         [offset] [type]         [value] [description]
@@ -78,59 +37,13 @@ struct NeuralNet {
         ........
         xxxx     64 bit double  ??      weight[layer][node on current layer][node on previous layer]
     */
-    void saveToFile(const char * filePath) {
-        FILE* saveFile = fopen(filePath, "wb");
-        
-        // write dimensions of neural network
-        fwrite(&numberOfLayers, sizeof(int), 1, saveFile);
-        fwrite(&nodesInLayer[0], sizeof(int), nodesInLayer.size(), saveFile);
-
-        // layer
-        for(int l = 0; l < numberOfLayers-1; ++l) {
-            // node
-            for(int j = 0; j < nodesInLayer[l]; ++j) {
-                // weights, bias
-                fwrite(&weight[l][j][0], sizeof(double), weight[l][j].size(), saveFile);
-                fwrite(&bias[l][j], sizeof(double), 1, saveFile); 
-            }
-        }
-
-        fclose(saveFile);
-    }
+    void saveToFile(const char* filePath);
 
     // given an input vector, returns the values in the last layer of the network
-    std::vector<double> operator ()(const std::vector<double>& input) {
-        if(input.size() != nodesInLayer[numberOfLayers-1]) {
-            printf("ERROR: Input size not valid for neural network. Input an std::vector<double> with size %d. Operation terminated.\n", nodesInLayer[numberOfLayers-1]);
-            return {-999};
-        }
-        
-        value[numberOfLayers-1].assign(input.begin(), input.end()); // input layer
-        for (int l = numberOfLayers-2; l >= 0; --l) {
-            for(int j = 0; j < nodesInLayer[l]; ++j) {
-                double z = bias[l][j];
-                for(int k = 0; k < nodesInLayer[l+1]; ++k) {
-                    z += weight[l][j][k] * value[l+1][k];
-                }
-                z_value[l][j] = z;
-                value[l][j] = z > 0 ? z : 0;
-            }
-        }
-
-        return value[0];
-    }
+    std::vector<double> operator ()(const std::vector<double>& input);
 
     // returns the cost of an operation
-    double error(const std::vector<double>& expected) {
-        if(expected.size() != value[0].size()) {
-            printf("ERROR: expected.size() != outputLayerOfNetwork.size(). (%d != %d)\n", expected.size(), value[0].size());
-            return -1;
-        }
-        double err = 0;
-        for(int i = 0; i < expected.size(); ++i) {
-            double diff = (value[0][i] - expected[i]);
-            err += 0.5 * diff * diff;
-        }
-        return err;
-    }
+    double error(const std::vector<double>& expected);
 };
+
+#endif //NEURALNETB_NEURALNET_H
