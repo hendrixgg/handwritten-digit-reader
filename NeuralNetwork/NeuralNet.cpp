@@ -5,12 +5,12 @@
 #include <cstdio>
 #include <cmath>
 
-std::mt19937 generator(std::chrono::steady_clock::now().time_since_epoch().count());
+std::mt19937 ____generator__(std::chrono::steady_clock::now().time_since_epoch().count());
 // generates a random real number on the interval [range_from, range_to)
 double NeuralNet::random(const double& range_from, const double& range_to)
 {
     std::uniform_real_distribution<double> distribution (range_from, range_to);
-    return distribution(generator);
+    return distribution(____generator__);
 }
 double NeuralNet::f(double z) {
     return 1.0 / (1 + std::exp(-z));
@@ -103,7 +103,8 @@ void NeuralNet::saveToFile(const char * filePath) {
 }
 
 // given an input vector, returns the values in the last layer of the network
-std::vector<double> NeuralNet::operator ()(const std::vector<double>& input) {
+template<typename T>
+std::vector<double> NeuralNet::operator ()(const std::vector<T>& input) {
     if(input.size() != nodesInLayer[numberOfLayers-1]) {
         printf("ERROR: Input size not valid for neural network. Input an std::vector<double> with size %d. Operation terminated.\n", nodesInLayer[numberOfLayers-1]);
         return {-999};

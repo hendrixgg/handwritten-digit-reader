@@ -18,7 +18,8 @@ public:
     template<typename T>
     void train(const std::vector<std::vector<T>>& trainingExamples, const std::vector<std::vector<T>>& expected, const double rate);
 
-    void backProp(const std::vector<double>& example, const std::vector<double>& expected);
+    template<typename T>
+    void backProp(const std::vector<T>& example, const std::vector<double>& expected);
 };
 
 #endif // TRAINERB_TRAINER_H

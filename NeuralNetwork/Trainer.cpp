@@ -20,7 +20,7 @@ template<typename T>
 void Trainer::train(const std::vector<std::vector<T>>& trainingExamples, const std::vector<std::vector<T>>& expected, const double rate) {
     // find gradient
     for(int i = 0; i < trainingExamples.size(); ++i) {
-        backProp(std::vector<double>(trainingExamples[i]), std::vector<double>(expected[i]));
+        backProp(trainingExamples[i], std::vector<double>(expected[i].begin(), expected[i].end()));
     }
     // modify weights and biases based on gradients
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
@@ -33,7 +33,8 @@ void Trainer::train(const std::vector<std::vector<T>>& trainingExamples, const s
     }
 }
 
-void Trainer::backProp(const std::vector<double>& example, const std::vector<double>& expected) {
+template<typename T>
+void Trainer::backProp(const std::vector<T>& example, const std::vector<double>& expected) {
     // run operation to get values
     (*net)(example);
 
