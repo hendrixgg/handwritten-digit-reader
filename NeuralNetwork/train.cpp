@@ -61,7 +61,7 @@ int main() {
     }
     
     int trainingRounds;
-    int batchSize = 100;
+    int batchSize = 1000;
     printf("Enter number of training rounds to run: ");
     scanf("%d", &trainingRounds);
     int numberOfBatches;
@@ -103,7 +103,7 @@ int main() {
         }
 
         printf("average cost: %lf\n", totalCost / testData.size);
-        printf("%c correct: %.2lf%c\n", '%', 100.0 * correctAnswers / testData.size, '%');
+        printf("%c wrong: %.2lf%c\n", '%', 100.0 - 100.0 * correctAnswers / testData.size, '%');
 
         auto end = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
