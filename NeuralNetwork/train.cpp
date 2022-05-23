@@ -18,7 +18,7 @@ struct TestData {
     unsigned char images[10000][784];
 };
 
-NeuralNet digitReader({10, 16, 16, 784});
+NeuralNet digitReader({10, 50, 50, 784});
 Trainer trainer(&digitReader);
 TrainData trainData;
 TestData testData;
@@ -86,7 +86,7 @@ int main() {
                 trainingBatch[i - t].assign(trainData.images[shuffle[i]], trainData.images[shuffle[i]]+784);
                 expectedOutput[i - t][trainData.labels[shuffle[i]]] = 1.0;
             }
-            trainer.train(trainingBatch, expectedOutput, 0.8);
+            trainer.train(trainingBatch, expectedOutput, 0.7);
         }
 
         // test progress
@@ -103,7 +103,7 @@ int main() {
         }
 
         printf("average cost: %lf\n", totalCost / testData.size);
-        printf("%c correct: %lf\n", '%', 100.0 * correctAnswers / testData.size);
+        printf("%c correct: %.2lf%c\n", '%', 100.0 * correctAnswers / testData.size, '%');
 
         auto end = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);

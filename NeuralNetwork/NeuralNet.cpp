@@ -17,6 +17,7 @@ double NeuralNet::f(double z) {
 }
 
 void NeuralNet::setStructure(const std::vector<int>& dimensions) {
+    value.clear(), weight.clear(), bias.clear();
     numberOfLayers = dimensions.size();
     nodesInLayer.assign(dimensions.begin(), dimensions.end());
     // put in a new weight matrix for each layer in the network
