@@ -21,32 +21,16 @@ struct TrainData {
 };
 
 TrainData data;
-// NeuralNet nn({10, 16, 16, 784});
-// NeuralNet nn("NeuralNetwork/savedNeuralNetwork.bin");
-NeuralNet nn("NeuralNetwork/currentNeuralNetwork.bin");
-int main() {
-    // FILE* data_file =  fopen("./TrainData/TrainData.bin", "rb");
-    // fread(&data, sizeof(TrainData), 1, data_file);
-    // printf("label: %d\n", data.labels[0]);
-    // for(int i = 0; i < 28; ++i) {
-    //     for(int j = 0; j < 28; ++j) {
-    //         printf("%4d", data.images[0][i*28 + j]);
-    //     }
-    //     printf("\n");
-    // }
-    // fclose(data_file);
 
-    // layer
-    // for (const auto& www : nn.weight) {
-        // j
-        for(const auto& ww : nn.weight[0]) {
-            // k
-            for(const auto& w : ww) {
-                printf("%.2lf ", w);
-            }
-            printf("\n");
+int main() {
+    FILE* data_file =  fopen("./TrainData/TrainData.bin", "rb");
+    fread(&data, sizeof(TrainData), 1, data_file);
+    printf("label: %d\n", data.labels[0]);
+    for(int i = 0; i < 28; ++i) {
+        for(int j = 0; j < 28; ++j) {
+            printf("%4d", data.images[0][i*28 + j]);
         }
         printf("\n");
-    // }
-
+    }
+    fclose(data_file);
 }
