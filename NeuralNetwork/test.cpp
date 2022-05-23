@@ -76,5 +76,9 @@ int main() {
     printf("average cost: %lf\n", avgCost/numTests);
     printf("%c correct: %lf\n", '%', correctAnswers * 1.0 / numTests);
     
-    // digitReader.saveToFile("savedNeuralNetwork.bin");
+    printf("save neural network? (y/n): ");
+    char wantToSave;
+    scanf("%c", wantToSave);
+    if(wantToSave == 'y' || wantToSave == 'Y')
+        digitReader.saveToFile("savedNeuralNetwork.bin");
 }
