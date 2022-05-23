@@ -23,6 +23,18 @@ Trainer trainer(&digitReader);
 TrainData trainData;
 TestData testData;
 
+/*
+Input required:
+[1] - for new neural net
+[2] - to load from savedNeuralNetwork.bin
+[3] - to load from currentNeuralNetwork.bin
+[int]
+
+# of training rounds: [int]
+
+# of batches per round: [int]
+*/
+
 int main() {
     FILE* trainDatafile = fopen("../TrainData/TrainData.bin", "rb");
     fread(&trainData, sizeof(TrainData), 1, trainDatafile);
@@ -52,7 +64,7 @@ int main() {
     printf("Enter number of training rounds to run: ");
     scanf("%d", &trainingRounds);
     int numberOfBatches;
-    printf("Enter number of batches per round: ");
+    printf("\nEnter number of batches per round: ");
     scanf("%d", &numberOfBatches);
 
     int batchSize = 100;
