@@ -71,7 +71,7 @@ void Trainer::backProp(const std::vector<double>& example, const std::vector<dou
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
         for(int j = 0; j < net->nodesInLayer[l]; ++j) {
             for(int k = 0; k < net->nodesInLayer[l + 1]; ++k) {
-                weightGradient[l][j][k] += net->value[l][k] * partialA_wrt_Z(l, j) * valueGradient[l][j];
+                weightGradient[l][j][k] += net->value[l + 1][k] * partialA_wrt_Z(l, j) * valueGradient[l][j];
             }
         }
     }
