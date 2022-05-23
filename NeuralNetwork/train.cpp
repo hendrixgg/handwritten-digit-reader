@@ -71,7 +71,7 @@ int main() {
     numberOfBatches = std::min(numberOfBatches, trainData.size / batchSize);
 
     for(int round = 0; round < trainingRounds; ++round) {
-        printf("\n[Round %d Start]\n");
+        printf("\n[Round %d Start]\n", round);
         auto begin = std::chrono::steady_clock::now();
         
         std::vector<int> shuffle(trainData.size);
@@ -111,4 +111,8 @@ int main() {
 
         digitReader.saveToFile("currentNeuralNetwork.bin");
     }
+
+    puts("Training complete!");
+    printf("enter any character to quit");
+    scanf("%d", whichNet);
 }
