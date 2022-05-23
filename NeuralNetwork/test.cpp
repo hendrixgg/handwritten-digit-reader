@@ -20,16 +20,16 @@ int main() {
     fclose(testDatafile);
 
     int whichNet = 0;
-    puts("[0] - for new neural net");
-    puts("[1] - to load from savedNeuralNetwork.bin");
-    puts("[2] - to load from currentNeuralNetwork.bin");
+    puts("[1] - for new neural net");
+    puts("[2] - to load from savedNeuralNetwork.bin");
+    puts("[3] - to load from currentNeuralNetwork.bin");
     scanf("%d", &whichNet);
     switch (whichNet)
     {
-    case 1:
+    case 2:
         digitReader.initFromFile("savedNeuralNetwork.bin");
         break;
-    case 2:
+    case 3:
         digitReader.initFromFile("currentNeuralNetwork.bin");
     default:
         break;
