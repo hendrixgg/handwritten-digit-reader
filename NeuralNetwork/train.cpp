@@ -113,6 +113,6 @@ int main() {
     }
 
     puts("Training complete!");
-    printf("enter any character to quit");
-    scanf("%d", whichNet);
+    printf("escape program to quit");
+    scanf("%d", &whichNet);
 }
