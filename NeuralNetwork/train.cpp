@@ -71,7 +71,7 @@ int main() {
     numberOfBatches = std::min(numberOfBatches, trainData.size / batchSize);
 
     for(int round = 0; round < trainingRounds; ++round) {
-        printf("\n[Round %d Start]\n", round);
+        printf("\n[Round %d Start]\n", round+1);
         auto begin = std::chrono::steady_clock::now();
         
         std::vector<int> shuffle(trainData.size);
