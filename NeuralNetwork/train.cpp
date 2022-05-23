@@ -61,7 +61,7 @@ int main() {
     }
     
     int trainingRounds;
-    int batchSize = 1000;
+    int batchSize = 100;
     printf("Enter number of training rounds to run: ");
     scanf("%d", &trainingRounds);
     int numberOfBatches;
@@ -86,7 +86,7 @@ int main() {
                 trainingBatch[i - t].assign(trainData.images[shuffle[i]], trainData.images[shuffle[i]]+784);
                 expectedOutput[i - t][trainData.labels[shuffle[i]]] = 1.0;
             }
-            trainer.train(trainingBatch, expectedOutput, 0.8);
+            trainer.train(trainingBatch, expectedOutput, 0.5);
         }
 
         // test progress
