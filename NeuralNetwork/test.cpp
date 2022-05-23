@@ -74,7 +74,7 @@ int main() {
     printf("[Time Elasped: %lld ms]\n", duration.count());
 
     printf("average cost: %lf\n", avgCost/numTests);
-    printf("%c correct: %lf\n", '%', correctAnswers * 1.0 / numTests);
+    printf("%c correct: %lf\n", '%', 100.0 * correctAnswers / numTests);
     
     printf("save neural network? (y/n): ");
     char wantToSave[10];
