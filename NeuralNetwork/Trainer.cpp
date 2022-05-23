@@ -13,6 +13,7 @@ Trainer::Trainer(NeuralNet* nn):  net(nn) {
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
         weightGradient.emplace_back(net->nodesInLayer[l], std::vector<double>(net->nodesInLayer[l + 1]));
         biasGradient.emplace_back(net->nodesInLayer[l]);
+        valueGradient.emplace_back(net->nodesInLayer[l]);
     }
 }
 
@@ -21,6 +22,7 @@ void Trainer::train(const std::vector<std::vector<double>>& trainingExamples, co
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
         weightGradient[l].assign(net->nodesInLayer[l], std::vector<double>(net->nodesInLayer[l + 1]));
         biasGradient[l].assign(net->nodesInLayer[l], 0);
+        valueGradient[l].assign(net->nodesInLayer[l], 0);
     }
     // find gradient
     for(int i = 0; i < trainingExamples.size(); ++i) {
@@ -29,7 +31,7 @@ void Trainer::train(const std::vector<std::vector<double>>& trainingExamples, co
     // modify weights and biases based on gradients
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
         for(int j = 0; j < net->nodesInLayer[l]; ++j) {
-            net->bias[l][j] -= rate * biasGradient[l][j] / trainingExamples.size();
+            net->bias[l][j] -= rate * biasGradient[l][j] / trainingExamples.size(); // average gradient
             for(int k = 0; k < net->nodesInLayer[l + 1]; ++k) {
                 net->weight[l][j][k] -= rate * weightGradient[l][j][k] / trainingExamples.size();
             }
@@ -41,50 +43,30 @@ void Trainer::backProp(const std::vector<double>& example, const std::vector<dou
     // run operation to get values
     (*net)(example);
 
-    // l = 0:
-    int l = 0;
-    if(l == net->numberOfLayers-1) return;
-    for(int j = 0; j < net->nodesInLayer[l]; ++j) {
-        double tmp_gradient = (net->value[0][j] - expected[j]) * partialA_wrt_Z(l, j);
-        biasGradient[l][j] += tmp_gradient;
-        for(int k = 0; k < net->nodesInLayer[l + 1]; ++k) {
-            weightGradient[l][j][k] += tmp_gradient * (net->value[l + 1][k]);
-        }
+    // calculate value gradient
+    for(int k = 0; k < net->nodesInLayer[0]; ++k){
+        valueGradient[0][k] += net->value[0][k] - expected[k];
     }
-
-    // l = 1:
-    l = 1;
-    if(l == net->numberOfLayers-1) return;
-    for(int j = 0; j < net->nodesInLayer[l]; ++j) {
-        double tmp_gradient = 0;
-        for(int m = 0; m < net->nodesInLayer[0]; ++m) {
-            tmp_gradient += (net->value[0][m] - expected[m]) * partialA_wrt_Z(0, m) * (net->weight[0][m][j]) * partialA_wrt_Z(l, m);
-        }
-        biasGradient[l][j] += tmp_gradient;
-        for(int k = 0; k < net->nodesInLayer[2]; ++k) {
-            weightGradient[l][j][k] += tmp_gradient * (net->value[l + 1][k]);
-        }
-    }
-
-    // l = 2:
-    l = 2;
-    if(l == net->numberOfLayers-1) return;
-    for(int j = 0; j < net->nodesInLayer[l]; ++j) {
-        // biasGradient[l][j]
-        for(int m0 = 0; m0 < net->nodesInLayer[0]; ++m0) {
-            double tmp_gradient = 0;
-            for(int m1 = 0; m1 < net->nodesInLayer[1]; ++m1) {
-                tmp_gradient += (net->weight[0][m0][m1]) * partialA_wrt_Z(l-1, m1) * (net->weight[l-1][m1][j]) * partialA_wrt_Z(l, j);
+    for(int l = 1; l < net->numberOfLayers - 1; ++l) {
+        for(int k = 0; k < net->nodesInLayer[l]; ++k) {
+            for(int j = 0; j < net->nodesInLayer[l-1]; ++l) {
+                valueGradient[l][k] += net->weight[l-1][j][k] * partialA_wrt_Z(l-1, j) * valueGradient[l-1][j];
             }
-            biasGradient[l][j] += (net->value[0][m0] - expected[m0]) * partialA_wrt_Z(0, m0) * tmp_gradient;
         }
-        for(int k = 0; k < net->nodesInLayer[l + 1]; ++k) {
-            for(int m0 = 0; m0 < net->nodesInLayer[0]; ++m0) {
-                double tmp_gradient = 0;
-                for(int m1 = 0; m1 < net->nodesInLayer[1]; ++m1) {
-                    tmp_gradient += (net->weight[0][m0][m1]) * partialA_wrt_Z(l-1, m1) * (net->weight[l-1][m1][j]) * partialA_wrt_Z(l,j) * (net->value[l+1][k]);
-                }
-                weightGradient[l][j][k] += (net->value[0][m0] - expected[m0]) * partialA_wrt_Z(0, m0) * tmp_gradient;
+    }
+
+    // calculate bias gradient
+    for (int l = 0; l < net->numberOfLayers - 1; ++l) {
+        for(int j = 0; j < net->nodesInLayer[l]; ++j) {
+            biasGradient[l][j] += partialA_wrt_Z(l, j) * valueGradient[l][j];
+        }
+    }
+
+    // caluculate weight gradient
+    for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
+        for(int j = 0; j < net->nodesInLayer[l]; ++j) {
+            for(int k = 0; k < net->nodesInLayer[l + 1]; ++k) {
+                weightGradient[l][j][k] += net->value[l][k] * biasGradient[l][j];
             }
         }
     }
