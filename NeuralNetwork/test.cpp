@@ -38,7 +38,7 @@ int main() {
     auto begin = std::chrono::steady_clock::now();
     
     double totalCost = 0;
-    const int numTests = 10, startPos = 100;
+    const int numTests = data.size, startPos = 100;
     int correctAnswers = 0;
 
     for(int t = startPos; t < startPos + numTests; ++t) {
@@ -59,13 +59,13 @@ int main() {
         totalCost += digitReader.error(expected);
         correctAnswers += answer==int(data.labels[t]);
 
-        // display results
-        printf("label: %d\n", data.labels[t]);
-        printf("network output:\n");
-        for(int i = 0; i < output.size(); ++i) {
-            printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
-        }
-        printf("cost: %lf\n", digitReader.error(expected));
+        // // display results
+        // printf("label: %d\n", data.labels[t]);
+        // printf("network output:\n");
+        // for(int i = 0; i < output.size(); ++i) {
+        //     printf("%d: %.2lf %s\n", i, output[i], (i == answer ? "<--" : ""));
+        // }
+        // printf("cost: %lf\n", digitReader.error(expected));
     }
     
     auto end = std::chrono::steady_clock::now();
