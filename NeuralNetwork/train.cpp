@@ -107,7 +107,7 @@ int main() {
 
         auto end = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-        printf("[Time Elasped: %lld min %.3lf sec]\n", duration.count()/1000/60, (duration.count() % (1000*60))/1000.0);
+        printf("[Time Elasped: %.3lf sec]\n", duration.count()/1000.0);
 
         digitReader.saveToFile("currentNeuralNetwork.bin");
     }
