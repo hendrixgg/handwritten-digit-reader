@@ -14,7 +14,6 @@ NeuralNet digitReader({10, 16, 16, 784});
 TestData data;
 
 int main() {
-    // try out on test data
     FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
@@ -38,7 +37,7 @@ int main() {
     printf("[Program Start]\n");
     auto begin = std::chrono::steady_clock::now();
     
-    double avgCost = 0;
+    double totalCost = 0;
     const int numTests = data.size, startPos = 0;
     int correctAnswers = 0;
 
@@ -57,7 +56,7 @@ int main() {
         int answer = std::max_element(output.begin(), output.end()) - output.begin();
         std::vector<double> expected(10);
         expected[data.labels[t]] = 1;
-        avgCost += digitReader.error(expected);
+        totalCost += digitReader.error(expected);
         correctAnswers += answer==int(data.labels[t]);
 
         // display results
@@ -73,7 +72,7 @@ int main() {
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
     printf("[Time Elasped: %lld ms]\n", duration.count());
 
-    printf("average cost: %lf\n", avgCost/numTests);
+    printf("average cost: %lf\n", totalCost / numTests);
     printf("%c correct: %lf\n", '%', 100.0 * correctAnswers / numTests);
     
     printf("save neural network? (y/n): ");
