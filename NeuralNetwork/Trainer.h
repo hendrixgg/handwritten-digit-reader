@@ -17,7 +17,8 @@ public:
     Trainer(NeuralNet* nn);
 
     void train(const std::vector<std::vector<double>>& trainingExamples, const std::vector<std::vector<double>>& expected, const double rate);
-
+    
+private:
     void backProp(const std::vector<double>& example, const std::vector<double>& expected);
 };
 
