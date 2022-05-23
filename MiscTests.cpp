@@ -1,3 +1,5 @@
+#include "NeuralNetwork/NeuralNet.h"
+
 #include <stdio.h>
 #include <vector>
 #include <numeric>
@@ -19,7 +21,9 @@ struct TrainData {
 };
 
 TrainData data;
-
+// NeuralNet nn({10, 16, 16, 784});
+// NeuralNet nn("NeuralNetwork/savedNeuralNetwork.bin");
+NeuralNet nn("NeuralNetwork/currentNeuralNetwork.bin");
 int main() {
     // FILE* data_file =  fopen("./TrainData/TrainData.bin", "rb");
     // fread(&data, sizeof(TrainData), 1, data_file);
@@ -32,17 +36,17 @@ int main() {
     // }
     // fclose(data_file);
 
+    // layer
+    // for (const auto& www : nn.weight) {
+        // j
+        for(const auto& ww : nn.weight[0]) {
+            // k
+            for(const auto& w : ww) {
+                printf("%.2lf ", w);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    // }
 
-    std::vector<int> v(10);
-    std::iota(v.begin(), v.end(), 0);
- 
-    std::random_device rd;
-    std::mt19937 g(rd());
- 
-    std::shuffle(v.begin(), v.end(), g);
- 
-    for(const int x : v) printf("%d ", x);
-
-    int ms = 166982;
-    printf("%d min %.3lf sec", ms/1000/60, (ms % (1000*60))/1000.0);
 }

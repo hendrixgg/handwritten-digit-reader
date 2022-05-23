@@ -114,7 +114,7 @@ void NeuralNet::saveToFile(const char * filePath) {
 
 // given an input vector, returns the values in the last layer of the network
 std::vector<double> NeuralNet::operator ()(const std::vector<double>& input) {
-    if(input.size() != nodesInLayer[numberOfLayers-1]) {
+    if(int(input.size()) != nodesInLayer[numberOfLayers-1]) {
         printf("ERROR: Input size not valid for neural network. Input an std::vector<double> with size %d. Operation terminated.\n", nodesInLayer[numberOfLayers-1]);
         return {-999};
     }
@@ -136,11 +136,11 @@ std::vector<double> NeuralNet::operator ()(const std::vector<double>& input) {
 // returns the cost of an operation
 double NeuralNet::error(const std::vector<double>& expected) {
     if(expected.size() != value[0].size()) {
-        printf("ERROR: expected.size() != outputLayerOfNetwork.size(). (%d != %d)\n", expected.size(), value[0].size());
+        printf("ERROR: expected.size() != outputLayerOfNetwork.size(). (%lld != %lld)\n", expected.size(), value[0].size());
         return -1;
     }
     double err = 0;
-    for(int i = 0; i < expected.size(); ++i) {
+    for(size_t i = 0; i < expected.size(); ++i) {
         double diff = (value[0][i] - expected[i]);
         err += 0.5 * diff * diff;
     }

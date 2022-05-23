@@ -86,7 +86,7 @@ int main() {
                 trainingBatch[i - t].assign(trainData.images[shuffle[i]], trainData.images[shuffle[i]]+784);
                 expectedOutput[i - t][trainData.labels[shuffle[i]]] = 1.0;
             }
-            trainer.train(trainingBatch, expectedOutput, 0.5);
+            trainer.train(trainingBatch, expectedOutput, 0.8);
         }
 
         // test progress
@@ -112,7 +112,5 @@ int main() {
         digitReader.saveToFile("currentNeuralNetwork.bin");
     }
 
-    puts("Training complete!");
-    printf("escape program to quit");
-    scanf("%d", &whichNet);
+    puts("\nTraining complete!");
 }
