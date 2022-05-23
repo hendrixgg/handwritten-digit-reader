@@ -61,13 +61,13 @@ int main() {
     }
     
     int trainingRounds;
+    int batchSize = 1000;
     printf("Enter number of training rounds to run: ");
     scanf("%d", &trainingRounds);
     int numberOfBatches;
-    printf("\nEnter number of batches per round: ");
+    printf("\nEnter number of batches per round (max %d): ", trainData.size / batchSize);
     scanf("%d", &numberOfBatches);
 
-    int batchSize = 100;
     numberOfBatches = std::min(numberOfBatches, trainData.size / batchSize);
 
     for(int round = 0; round < trainingRounds; ++round) {
