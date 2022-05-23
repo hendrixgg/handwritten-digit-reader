@@ -46,9 +46,10 @@ int main() {
     auto begin = std::chrono::steady_clock::now();
     
     int batchSize = 100;
-    int shuffle[data.size];
-    std::iota(shuffle, shuffle+data.size, 0);
-    std::random_shuffle(shuffle, shuffle+data.size);
+    std::vector<int> shuffle(data.size);
+    std::iota(shuffle.begin(), shuffle.end(), 0);
+    std::random_shuffle(shuffle.begin(), shuffle.end());
+    
     for(int batch = 0, t = 0; batch < numberOfBatches; ++batch, t+=batchSize) {
         std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
         std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));

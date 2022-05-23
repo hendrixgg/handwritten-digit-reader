@@ -17,9 +17,14 @@ Trainer::Trainer(NeuralNet* nn):  net(nn) {
 }
 
 void Trainer::train(const std::vector<std::vector<double>>& trainingExamples, const std::vector<std::vector<double>>& expected, const double rate) {
+    // clear gradient matrixes
+    for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
+        weightGradient[l].assign(net->nodesInLayer[l], std::vector<double>(net->nodesInLayer[l + 1]));
+        biasGradient[l].assign(net->nodesInLayer[l], 0);
+    }
     // find gradient
     for(int i = 0; i < trainingExamples.size(); ++i) {
-        backProp(std::vector<double>(trainingExamples[i].begin(), trainingExamples[i].end()), std::vector<double>(expected[i].begin(), expected[i].end()));
+        backProp(trainingExamples[i], expected[i]);
     }
     // modify weights and biases based on gradients
     for(int l = 0; l + 1 < net->numberOfLayers; ++l) {
@@ -41,9 +46,9 @@ void Trainer::backProp(const std::vector<double>& example, const std::vector<dou
     if(l == net->numberOfLayers-1) return;
     for(int j = 0; j < net->nodesInLayer[l]; ++j) {
         double tmp_gradient = (net->value[0][j] - expected[j]) * partialA_wrt_Z(l, j);
-        biasGradient[l][j] = tmp_gradient;
+        biasGradient[l][j] += tmp_gradient;
         for(int k = 0; k < net->nodesInLayer[l + 1]; ++k) {
-            weightGradient[l][j][k] = tmp_gradient * (net->value[l + 1][k]);
+            weightGradient[l][j][k] += tmp_gradient * (net->value[l + 1][k]);
         }
     }
 
