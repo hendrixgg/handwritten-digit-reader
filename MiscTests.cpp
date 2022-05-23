@@ -42,4 +42,7 @@ int main() {
     std::shuffle(v.begin(), v.end(), g);
  
     for(const int x : v) printf("%d ", x);
+
+    int ms = 166982;
+    printf("%d min %.3lf sec", ms/1000/60, (ms % (1000*60))/1000.0);
 }
