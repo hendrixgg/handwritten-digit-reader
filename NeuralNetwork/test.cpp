@@ -11,9 +11,6 @@ struct TestData {
 };
 
 NeuralNet digitReader({10, 16, 16, 784});
-// NeuralNet digitReader("savedNeuralNetwork.bin");
-// NeuralNet digitReader("currentNeuralNetwork.bin");
-
 TestData data;
 
 int main() {
@@ -37,12 +34,14 @@ int main() {
     default:
         break;
     }
-    double avgCost = 0;
-    const int numTests = data.size, startPos = 0;
+
     printf("[Program Start]\n");
     auto begin = std::chrono::steady_clock::now();
     
+    double avgCost = 0;
+    const int numTests = data.size, startPos = 0;
     int correctAnswers = 0;
+
     for(int t = startPos; t < startPos + numTests; ++t) {
         // print image
         // printf("label: %d\n", data.labels[t]);
@@ -60,6 +59,7 @@ int main() {
         expected[data.labels[t]] = 1;
         avgCost += digitReader.error(expected);
         correctAnswers += answer==int(data.labels[t]);
+
         // display results
         // printf("label: %d\n", data.labels[t]);
         // printf("network output:\n");

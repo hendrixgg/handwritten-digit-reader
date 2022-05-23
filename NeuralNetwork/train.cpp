@@ -7,20 +7,36 @@
 #include <random>
 #include <algorithm>
 
-struct TrainData{
+struct TrainData {
     int size = 60000;
     unsigned char labels[60000];
     unsigned char images[60000][784];
 };
 
-// NeuralNet digitReader({10, 16, 16, 784});
-NeuralNet digitReader("currentNeuralNetwork.bin");
+NeuralNet digitReader({10, 16, 16, 784});
 Trainer trainer(&digitReader);
 TrainData data;
+
 int main() {
     FILE* trainDatafile = fopen("../TrainData/TrainData.bin", "rb");
     fread(&data, sizeof(TrainData), 1, trainDatafile);
     fclose(trainDatafile);
+
+    int whichNet = 0;
+    puts("[0] - for new neural net");
+    puts("[1] - to load from savedNeuralNetwork.bin");
+    puts("[2] - to load from currentNeuralNetwork.bin");
+    scanf("%d", &whichNet);
+    switch (whichNet)
+    {
+    case 1:
+        digitReader.initFromFile("savedNeuralNetwork.bin");
+        break;
+    case 2:
+        digitReader.initFromFile("currentNeuralNetwork.bin");
+    default:
+        break;
+    }
     
     int numberOfBatches;
     printf("Enter number of training batches to run: ");
