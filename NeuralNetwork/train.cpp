@@ -22,17 +22,18 @@ int main() {
     fread(&data, sizeof(TrainData), 1, trainDatafile);
     fclose(trainDatafile);
     
-    int numberOfGenerations;
-    scanf("%d", &numberOfGenerations);
+    int numberOfBatches;
+    printf("Enter number of training batches to run: ");
+    scanf("%d", &numberOfBatches);
 
-    printf("[Program Start]\n");
+    printf("\n[Program Start]\n");
     auto begin = std::chrono::steady_clock::now();
     
     int batchSize = 100;
     int shuffle[data.size];
     std::iota(shuffle, shuffle+data.size, 0);
     std::random_shuffle(shuffle, shuffle+data.size);
-    for(int gen = 0, t = 0; gen < numberOfGenerations; ++gen, t+=batchSize) {
+    for(int batch = 0, t = 0; batch < numberOfBatches; ++batch, t+=batchSize) {
         std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
         std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));
         for(int i = t; i < t + batchSize; ++i) {

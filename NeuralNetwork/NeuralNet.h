@@ -7,6 +7,7 @@ class NeuralNet {
     // generates a random real number on the interval [range_from, range_to)
     double static random(const double& range_from, const double& range_to);
     double static f(double z);
+    void setStructure(const std::vector<int>& dimensions);
 public:
     
     // 0-th layer is the output layer, 1-th layer is the last hidden layer, ...
@@ -17,6 +18,13 @@ public:
     std::vector<std::vector<std::vector<double>>> weight;
     // bias matrix, b[L][k] = bias on k-th node on L-th layer
     std::vector<std::vector<double>> bias;
+    
+    // construct the value, weight and bias vectors
+
+    // initializes the weights and biases
+    void initFromFile(const char* sourceFilePath);
+    void initRandom(const std::vector<int>& dimensions);
+    void initRandom();
 
     // constructs a neural net with the specified structure containing random weights and biases
     NeuralNet(const std::vector<int>& dimensions);
@@ -24,9 +32,6 @@ public:
     // constructs a neural net from the source file created by saveToFile function
     NeuralNet(const char* sourceFilePath);
 
-    // initializes the weights and biases to random values
-    void initRandom(const std::vector<int>& dimensions);
-    void initRandom();
 
     /*  saves the neural net in the following format:
         [offset] [type]         [value] [description]

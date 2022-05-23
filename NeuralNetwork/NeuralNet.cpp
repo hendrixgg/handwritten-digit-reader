@@ -15,36 +15,8 @@ double NeuralNet::random(const double& range_from, const double& range_to)
 double NeuralNet::f(double z) {
     return 1.0 / (1 + std::exp(-z));
 }
-// constructs a neural net with the specified structure containing random weights and biases
-NeuralNet::NeuralNet(const std::vector<int>& dimensions){
-    initRandom(dimensions);
-}
 
-// constructs a neural net from the source file containing structure, weights and biases
-NeuralNet::NeuralNet(const char* sourceFilePath) {
-    FILE* sourceFile = fopen(sourceFilePath, "rb");
-    
-    // read dimesions of neural network
-    fread(&numberOfLayers, sizeof(int), 1, sourceFile);
-    nodesInLayer.resize(numberOfLayers);
-    fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
-
-    // read weights and biases and structure the vectors to store the values
-    for(int l = 0; l + 1 < numberOfLayers; ++l) {
-        value.emplace_back(nodesInLayer[l]);
-        weight.emplace_back(nodesInLayer[l], std::vector<double>(nodesInLayer[l + 1]));
-        bias.emplace_back(nodesInLayer[l]);
-        for(int j = 0; j < nodesInLayer[l]; ++j) {
-            fread(&weight[l][j][0], sizeof(double), nodesInLayer[l+1], sourceFile);
-            fread(&bias[l][j], sizeof(double), 1, sourceFile);
-        }
-    }
-    value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
-
-    fclose(sourceFile);
-}
-
-void NeuralNet::initRandom(const std::vector<int>& dimensions) {
+void NeuralNet::setStructure(const std::vector<int>& dimensions) {
     numberOfLayers = dimensions.size();
     nodesInLayer.assign(dimensions.begin(), dimensions.end());
     // put in a new weight matrix for each layer in the network
@@ -54,8 +26,39 @@ void NeuralNet::initRandom(const std::vector<int>& dimensions) {
         bias.emplace_back(nodesInLayer[l]);
     }
     value.emplace_back(nodesInLayer[numberOfLayers-1]); // for input layer
-    initRandom(); // for random values
 }
+
+void NeuralNet::initFromFile(const char* sourceFilePath) {
+    FILE* sourceFile = fopen(sourceFilePath, "rb");
+    
+    // read dimesions of neural network
+    fread(&numberOfLayers, sizeof(int), 1, sourceFile);
+    std::vector<int> dimensions(numberOfLayers);
+    fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
+
+    // if dimensions are new, update structure
+    if (dimensions.size() != nodesInLayer.size()) {
+        setStructure(dimensions);
+    } else {
+        for(int i = 0; i < dimensions.size(); ++i) {
+            if(dimensions[i] != nodesInLayer[i]) {
+                setStructure(dimensions);
+                break;
+            }
+        }
+    }
+
+    // read weights and biases
+    for(int l = 0; l + 1 < numberOfLayers; ++l) {
+        for(int j = 0; j < nodesInLayer[l]; ++j) {
+            fread(&weight[l][j][0], sizeof(double), nodesInLayer[l+1], sourceFile);
+            fread(&bias[l][j], sizeof(double), 1, sourceFile);
+        }
+    }
+
+    fclose(sourceFile);
+}
+
 
 void NeuralNet::initRandom() {
     // put in a new weight matrix for each layer in the network
@@ -68,6 +71,23 @@ void NeuralNet::initRandom() {
         }
     }
 }
+
+void NeuralNet::initRandom(const std::vector<int>& dimensions) {
+    setStructure(dimensions);
+    initRandom();
+}
+
+// constructs a neural net with the specified structure containing random weights and biases
+NeuralNet::NeuralNet(const std::vector<int>& dimensions){
+    setStructure(dimensions);
+    initRandom();
+}
+
+// constructs a neural net from the source file containing structure, weights and biases
+NeuralNet::NeuralNet(const char* sourceFilePath) {
+    initFromFile(sourceFilePath);
+}
+
 
 /*  saves the neural net in the following format:
     [offset] [type]         [value] [description]

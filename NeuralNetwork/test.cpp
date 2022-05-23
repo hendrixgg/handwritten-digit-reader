@@ -21,7 +21,22 @@ int main() {
     FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
-    
+
+    int whichNet = 0;
+    puts("[0] - for new neural net");
+    puts("[1] - to load from savedNeuralNetwork.bin");
+    puts("[2] - to load from currentNeuralNetwork.bin");
+    scanf("%d", &whichNet);
+    switch (whichNet)
+    {
+    case 1:
+        digitReader.initFromFile("savedNeuralNetwork.bin");
+        break;
+    case 2:
+        digitReader.initFromFile("currentNeuralNetwork.bin");
+    default:
+        break;
+    }
     double avgCost = 0;
     const int numTests = data.size, startPos = 0;
     printf("[Program Start]\n");
