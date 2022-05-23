@@ -3,3 +3,4 @@ TrainData/ReadAndSave.exe
 TestData/ReadAndSave.exe
 .prettierignore
 a.exe
+NeuralNetwork/currentNeuralNetwork.bin
