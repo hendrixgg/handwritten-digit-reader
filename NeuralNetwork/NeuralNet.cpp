@@ -33,20 +33,10 @@ void NeuralNet::initFromFile(const char* sourceFilePath) {
     
     // read dimesions of neural network
     fread(&numberOfLayers, sizeof(int), 1, sourceFile);
-    std::vector<int> dimensions(numberOfLayers);
-    fread(nodesInLayer.data(), sizeof(int), numberOfLayers, sourceFile);
+    nodesInLayer.resize(numberOfLayers);
+    fread(&nodesInLayer[0], sizeof(int), numberOfLayers, sourceFile);
 
-    // if dimensions are new, update structure
-    if (dimensions.size() != nodesInLayer.size()) {
-        setStructure(dimensions);
-    } else {
-        for(int i = 0; i < dimensions.size(); ++i) {
-            if(dimensions[i] != nodesInLayer[i]) {
-                setStructure(dimensions);
-                break;
-            }
-        }
-    }
+    setStructure(nodesInLayer);
 
     // read weights and biases
     for(int l = 0; l + 1 < numberOfLayers; ++l) {

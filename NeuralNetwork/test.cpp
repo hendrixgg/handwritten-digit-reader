@@ -77,8 +77,8 @@ int main() {
     printf("%c correct: %lf\n", '%', correctAnswers * 1.0 / numTests);
     
     printf("save neural network? (y/n): ");
-    char wantToSave;
-    scanf("%c", wantToSave);
-    if(wantToSave == 'y' || wantToSave == 'Y')
+    char wantToSave[10];
+    scanf("%s", wantToSave);
+    if(wantToSave[0] == 'y' || wantToSave[0] == 'Y')
         digitReader.saveToFile("savedNeuralNetwork.bin");
 }
