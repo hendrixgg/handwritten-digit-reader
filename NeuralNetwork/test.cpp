@@ -38,7 +38,7 @@ int main() {
     auto begin = std::chrono::steady_clock::now();
     
     double totalCost = 0;
-    const int numTests = data.size, startPos = 100;
+    const int numTests = data.size, startPos = 0;
     int correctAnswers = 0;
 
     for(int t = startPos; t < startPos + numTests; ++t) {
@@ -73,7 +73,7 @@ int main() {
     printf("[Time Elasped: %lld ms]\n", duration.count());
 
     printf("average cost: %lf\n", totalCost / numTests);
-    printf("%c wrong: %lf\n", '%', 100.0 - 100.0 * correctAnswers / numTests);
+    printf("%c wrong: %.2lf\n", '%', 100.0 - 100.0 * correctAnswers / numTests);
     
     printf("save neural network? (y/n): ");
     char wantToSave[10];

@@ -18,7 +18,7 @@ struct TestData {
     unsigned char images[10000][784];
 };
 
-NeuralNet digitReader({10, 50, 50, 784});
+NeuralNet digitReader({10, 150, 300, 784});
 Trainer trainer(&digitReader);
 TrainData trainData;
 TestData testData;
@@ -61,7 +61,7 @@ int main() {
     }
     
     int trainingRounds;
-    int batchSize = 1000;
+    int batchSize = 100;
     printf("Enter number of training rounds to run: ");
     scanf("%d", &trainingRounds);
     int numberOfBatches;
@@ -82,28 +82,32 @@ int main() {
         for(int batch = 0, t = 0; batch < numberOfBatches; ++batch, t+=batchSize) {
             std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
             std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));
-            for(int i = t; i < t + batchSize; ++i) {
-                trainingBatch[i - t].assign(trainData.images[shuffle[i]], trainData.images[shuffle[i]]+784);
-                expectedOutput[i - t][trainData.labels[shuffle[i]]] = 1.0;
+            for(int i = 0; i < batchSize; ++i) {
+                for(int j = 0; j < 784; ++j) {
+                    trainingBatch[i][j] = trainData.images[shuffle[t + i]][j];
+                }
+                expectedOutput[i][trainData.labels[shuffle[t + i]]] = 1.0;
             }
-            trainer.train(trainingBatch, expectedOutput, 0.7);
+            trainer.train(trainingBatch, expectedOutput, 0.01);
         }
 
-        // test progress
-        double totalCost = 0;
-        int correctAnswers = 0;
+        if((round + 1) % 10 == 0) {
+            // test progress
+            double totalCost = 0;
+            int correctAnswers = 0;
 
-        for(int t = 0; t < testData.size; ++t) {
-            std::vector<double> output(digitReader(std::vector<double>(testData.images[t], testData.images[t]+784)));
-            int answer = std::max_element(output.begin(), output.end()) - output.begin();
-            std::vector<double> expected(10);
-            expected[testData.labels[t]] = 1;
-            totalCost += digitReader.error(expected);
-            correctAnswers += answer==int(testData.labels[t]);
+            for(int t = 0; t < testData.size; ++t) {
+                std::vector<double> output(digitReader(std::vector<double>(testData.images[t], testData.images[t]+784)));
+                int answer = std::max_element(output.begin(), output.end()) - output.begin();
+                std::vector<double> expected(10);
+                expected[testData.labels[t]] = 1;
+                totalCost += digitReader.error(expected);
+                correctAnswers += answer==int(testData.labels[t]);
+            }
+
+            printf("average cost: %lf\n", totalCost / testData.size);
+            printf("%.2lf %c test error rate\n", 100.0 - 100.0 * correctAnswers / testData.size, '%');
         }
-
-        printf("average cost: %lf\n", totalCost / testData.size);
-        printf("%c wrong: %.2lf%c\n", '%', 100.0 - 100.0 * correctAnswers / testData.size, '%');
 
         auto end = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
