@@ -3,7 +3,6 @@
 #include <chrono>
 #include <random>
 #include <cstdio>
-#include <cmath>
 
 namespace std {
     
