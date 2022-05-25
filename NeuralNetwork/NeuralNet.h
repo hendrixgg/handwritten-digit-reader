@@ -1,12 +1,11 @@
 #pragma once
 
 #include <vector>
-#include <cmath>
 
 class NeuralNet {
     // generates a random real number on the interval [range_from, range_to)
     double static random(const double& range_from, const double& range_to);
-    double static f(double z) { return 1.0 / (1 + std::exp(-z)); };
+    inline double static f(double z);
     void setStructure(const std::vector<int>& dimensions);
 public:
     
@@ -53,4 +52,7 @@ public:
 
     // returns the cost of an operation
     double error(const std::vector<double>& expected);
+
+    // returns the derivative of the activation function f based on the output of f(z)
+    inline double fPrime(double fOfZ);
 };

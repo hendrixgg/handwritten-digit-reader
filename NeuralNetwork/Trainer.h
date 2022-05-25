@@ -10,8 +10,6 @@ class Trainer {
     std::vector<std::vector<double>> biasGradient;
     std::vector<std::vector<double>> valueGradient;
 
-    inline double partialA_wrt_Z(int l, int j);
-
 public:
     Trainer(NeuralNet* nn);
 

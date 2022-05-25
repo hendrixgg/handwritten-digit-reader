@@ -3,6 +3,7 @@
 #include <chrono>
 #include <random>
 #include <cstdio>
+#include <cmath>
 
 namespace std {
     
@@ -13,6 +14,9 @@ namespace std {
         uniform_real_distribution<double> distribution (range_from, range_to);
         return distribution(____generator__);
     }
+
+    inline double NeuralNet::f(double z) { return 1.0 / (1 + exp(-z)); };
+    inline double NeuralNet::fPrime(double fOfZ) { return fOfZ * (1 - fOfZ); };
 
     void NeuralNet::setStructure(const vector<int>& dimensions) {
         value.clear(), weight.clear(), bias.clear();
