@@ -6,14 +6,15 @@
 #include <chrono>
 #include <numeric>
 #include <algorithm>
+#include <random>
 
 struct TrainData {
-    int size = 60000;
+    const int size = 60000;
     unsigned char labels[60000];
     unsigned char images[60000][784];
 };
 struct TestData {
-    int size = 10000;
+    const int size = 10000;
     unsigned char labels[10000];
     unsigned char images[10000][784];
 };
@@ -23,19 +24,7 @@ Trainer trainer(&digitReader);
 TrainData trainData;
 TestData testData;
 
-/*
-Input required:
-[1] - for new neural net
-[2] - to load from savedNeuralNetwork.bin
-[3] - to load from currentNeuralNetwork.bin
-[int]
-
-# of training rounds: [int]
-
-# of batches per round: [int]
-*/
-
-int main() {
+void loadData() {
     FILE* trainDatafile = fopen("../TrainData/TrainData.bin", "rb");
     fread(&trainData, sizeof(TrainData), 1, trainDatafile);
     fclose(trainDatafile);
@@ -43,7 +32,9 @@ int main() {
     FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&testData, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
+}
 
+void askWhichNetworkToTrain() {
     int whichNet = 0;
     puts("[1] - for new neural net");
     puts("[2] - to load from savedNeuralNetwork.bin");
@@ -59,54 +50,81 @@ int main() {
     default:
         break;
     }
+}
+
+void testProgress() {
+    double totalCost = 0;
+    int correctAnswers = 0;
+
+    for(int t = 0; t < testData.size; ++t) {
+        std::vector<double> output(digitReader(std::vector<double>(testData.images[t], testData.images[t]+784)));
+        int answer = max_element(output.begin(), output.end()) - output.begin();
+        std::vector<double> expected(10);
+        expected[testData.labels[t]] = 1;
+        totalCost += digitReader.error(expected);
+        correctAnswers += answer==int(testData.labels[t]);
+    }
+
+    printf("average cost: %lf\n", totalCost / testData.size);
+    printf("%.2lf %c test error rate\n", 100.0 - 100.0 * correctAnswers / testData.size, '%');
+}
+
+void generatePermutation(int* first, int* last) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::iota(first, last, 0);
+    std::shuffle(first, last, g);
+}
+
+/*
+Input required:
+[1] - for new neural net
+[2] - to load from savedNeuralNetwork.bin
+[3] - to load from currentNeuralNetwork.bin
+[int]
+
+# of training rounds: [int]
+
+# of batches per round: [int]
+*/
+int main() {
+    loadData();
+
+    askWhichNetworkToTrain();
     
-    int trainingRounds;
-    int batchSize = 100;
+    int trainingRounds, numberOfBatches,  batchSize = 100;
+    // array to contain a permutation of the integers on the interval: [0, trainData.size-1]
+    int shuffle[trainData.size];
+
     printf("Enter number of training rounds to run: ");
     scanf("%d", &trainingRounds);
-    int numberOfBatches;
+
     printf("\nEnter number of batches per round (max %d): ", trainData.size / batchSize);
     scanf("%d", &numberOfBatches);
-
     numberOfBatches = std::min(numberOfBatches, trainData.size / batchSize);
 
     for(int round = 0; round < trainingRounds; ++round) {
         printf("\n[Round %d Start]\n", round+1);
         auto begin = std::chrono::steady_clock::now();
         
-        std::vector<int> shuffle(trainData.size);
-        std::iota(shuffle.begin(), shuffle.end(), 0);
-        std::random_shuffle(shuffle.begin(), shuffle.end());
+        generatePermutation(shuffle, shuffle + trainData.size);
 
-        // run gradient descent algorithm
+        // for each batch of training examples
         for(int batch = 0, t = 0; batch < numberOfBatches; ++batch, t+=batchSize) {
-            std::vector<std::vector<double>> trainingBatch(batchSize, std::vector<double>(784));
+            std::vector<std::vector<double>> trainingExamples(batchSize, std::vector<double>(784));
             std::vector<std::vector<double>> expectedOutput(batchSize, std::vector<double>(10));
             for(int i = 0; i < batchSize; ++i) {
                 for(int j = 0; j < 784; ++j) {
-                    trainingBatch[i][j] = trainData.images[shuffle[t + i]][j];
+                    trainingExamples[i][j] = trainData.images[shuffle[t + i]][j];
                 }
                 expectedOutput[i][trainData.labels[shuffle[t + i]]] = 1.0;
             }
-            trainer.train(trainingBatch, expectedOutput, 0.01);
+            // run gradient descent algorithm
+            trainer.train(trainingExamples, expectedOutput, 0.01);
         }
 
         if((round + 1) % 10 == 0) {
-            // test progress
-            double totalCost = 0;
-            int correctAnswers = 0;
-
-            for(int t = 0; t < testData.size; ++t) {
-                std::vector<double> output(digitReader(std::vector<double>(testData.images[t], testData.images[t]+784)));
-                int answer = std::max_element(output.begin(), output.end()) - output.begin();
-                std::vector<double> expected(10);
-                expected[testData.labels[t]] = 1;
-                totalCost += digitReader.error(expected);
-                correctAnswers += answer==int(testData.labels[t]);
-            }
-
-            printf("average cost: %lf\n", totalCost / testData.size);
-            printf("%.2lf %c test error rate\n", 100.0 - 100.0 * correctAnswers / testData.size, '%');
+            testProgress();
         }
 
         auto end = std::chrono::steady_clock::now();
