@@ -54,5 +54,5 @@ public:
     double error(const std::vector<double>& expected);
 
     // returns the derivative of the activation function f based on the output of f(z)
-    inline double fPrime(double fOfZ);
+    inline double fPrime(double fOfZ) { return fOfZ * (1 - fOfZ); };
 };
