@@ -1,5 +1,4 @@
-#ifndef TRAINERB_TRAINER_H
-#define TRAINERB_TRAINER_H
+#pragma once
 
 #include "NeuralNet.h"
 #include <vector>
@@ -21,5 +20,3 @@ public:
 private:
     void backProp(const std::vector<double>& example, const std::vector<double>& expected);
 };
-
-#endif // TRAINERB_TRAINER_H
