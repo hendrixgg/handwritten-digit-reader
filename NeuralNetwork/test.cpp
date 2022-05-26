@@ -1,10 +1,11 @@
-#include "NeuralNet.h"
+#include "NeuralNet.hpp"
 #include <vector>
 #include <cstdio>
 #include <chrono>
 #include <algorithm>
 
-struct TestData {
+struct TestData
+{
     int size = 10000;
     unsigned char labels[10000];
     unsigned char images[10000][784];
@@ -13,8 +14,9 @@ struct TestData {
 NeuralNet digitReader({10, 16, 16, 784});
 TestData data;
 
-int main() {
-    FILE* testDatafile = fopen("../TestData/TestData.bin", "rb");
+int main()
+{
+    FILE *testDatafile = fopen("../TestData/TestData.bin", "rb");
     fread(&data, sizeof(TestData), 1, testDatafile);
     fclose(testDatafile);
 
@@ -36,12 +38,13 @@ int main() {
 
     printf("[Program Start]\n");
     auto begin = std::chrono::steady_clock::now();
-    
+
     double totalCost = 0;
     const int numTests = data.size, startPos = 0;
     int correctAnswers = 0;
 
-    for(int t = startPos; t < startPos + numTests; ++t) {
+    for (int t = startPos; t < startPos + numTests; ++t)
+    {
         // // print image
         // printf("label: %d\n", data.labels[t]);
         // for(int i = 0; i < 28; ++i) {
@@ -52,12 +55,12 @@ int main() {
         // }
 
         // find the network's answer
-        std::vector<double> output(digitReader(std::vector<double>(data.images[t], data.images[t]+784)));
+        std::vector<double> output(digitReader(std::vector<double>(data.images[t], data.images[t] + 784)));
         int answer = std::max_element(output.begin(), output.end()) - output.begin();
         std::vector<double> expected(10);
         expected[data.labels[t]] = 1;
         totalCost += digitReader.error(expected);
-        correctAnswers += answer==int(data.labels[t]);
+        correctAnswers += answer == int(data.labels[t]);
 
         // // display results
         // printf("label: %d\n", data.labels[t]);
@@ -67,17 +70,17 @@ int main() {
         // }
         // printf("cost: %lf\n", digitReader.error(expected));
     }
-    
+
     auto end = std::chrono::steady_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
     printf("[Time Elasped: %lld ms]\n", duration.count());
 
     printf("average cost: %lf\n", totalCost / numTests);
     printf("%c wrong: %.2lf\n", '%', 100.0 - 100.0 * correctAnswers / numTests);
-    
+
     printf("save neural network? (y/n): ");
     char wantToSave[10];
     scanf("%s", wantToSave);
-    if(wantToSave[0] == 'y' || wantToSave[0] == 'Y')
+    if (wantToSave[0] == 'y' || wantToSave[0] == 'Y')
         digitReader.saveToFile("savedNeuralNetwork.bin");
 }
