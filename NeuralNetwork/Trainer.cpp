@@ -79,7 +79,7 @@ void Trainer::backProp(const std::vector<double> &example, const std::vector<dou
     }
 
     // calculate bias gradient
-    for (int l = 0; l < net->numberOfLayers - 1; ++l)
+    for (int l = 0; l + 1 < net->numberOfLayers; ++l)
     {
         for (int j = 0; j < net->nodesInLayer[l]; ++j)
         {
