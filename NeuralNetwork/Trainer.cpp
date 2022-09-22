@@ -70,7 +70,6 @@ void Trainer::backProp(const std::vector<double> &example, const std::vector<dou
     {
         for (int k = 0; k < net->nodesInLayer[l]; ++k)
         {
-            valueGradient[l][k] = 0;
             for (int j = 0; j < net->nodesInLayer[l - 1]; ++j)
             {
                 valueGradient[l][k] += (net->weight[l - 1][j][k]) * net->fPrime(net->value[l - 1][j]) * valueGradient[l - 1][j];
