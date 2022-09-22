@@ -47,7 +47,7 @@ public:
     */
     void saveToFile(const char* filePath);
 
-    // given an input vector, returns the values in the last layer of the network
+    // given an input vector, returns the values computed in the output layer of the network
     std::vector<double> operator ()(const std::vector<double>& input);
 
     // returns the cost of an operation
