@@ -125,7 +125,7 @@ void NeuralNet::saveToFile(const char *filePath)
     fclose(saveFile);
 }
 
-// given an input vector, returns the values in the last layer of the network
+// given an input vector, returns the values computed in the output layer of the network
 std::vector<double> NeuralNet::operator()(const std::vector<double> &input)
 {
     if (int(input.size()) != nodesInLayer[numberOfLayers - 1])
